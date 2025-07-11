@@ -44,11 +44,18 @@ header {
     backdrop-filter: blur(5px); /* 毛玻璃效果 */
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     border-radius: 15px; /* 圓角 */
-    max-width: 1200px; /* 預設寬度與 container 相同 */
+    /* 移除 max-width: 1200px; 讓 body.header-centered-80 控制 */
     margin: 0 auto; /* 居中 */
     padding: 1rem 2rem; /* 內容內邊距 */
     transition: max-width 0.3s ease-out; /* 過渡動畫 */
 }
+
+/* 標題欄始終置中且寬度為 80% */
+body.header-centered-80 .header-content {
+    max-width: 80%; /* 佔頁面8成 */
+    /* margin: 0 auto; 已經在 .header-content 中設定 */
+}
+
 
 /* 容器與主要佈局 */
 .container {
@@ -68,7 +75,7 @@ header {
     max-width: 100%; /* 預設佔滿 container 寬度 */
     margin-left: auto;
     margin-right: auto;
-    transition: max-width 0.3s ease-out; /* 過渡動畫 */
+    transition: max-width 0.3s ease-out, margin 0.3s ease-out; /* 過渡動畫 */
 }
 
 .search-bar {
@@ -138,7 +145,7 @@ hr {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    transition: flex 0.3s ease-out, width 0.3s ease-out, max-width 0.3s ease-out; /* 寬度過渡 */
+    transition: flex 0.3s ease-out, width 0.3s ease-out, max-width 0.3s ease-out, margin 0.3s ease-out; /* 寬度過渡 */
 }
 
 /* 當 body 有 sidebar-expanded 類別時：檔案瀏覽區擴展 */
@@ -155,15 +162,27 @@ body.sidebar-expanded .content-display-area {
     display: none; /* 隱藏佔位內容區 */
 }
 
-/* 當 body 有 content-centered 類別時：標題欄、搜尋區、側邊欄置中並縮窄 */
-body.content-centered .header-content {
+/* 當 body 有 content-centered-80 類別時 (沒有選取項目時)：
+   搜尋區、側邊欄置中並佔 80% 寬 */
+body.content-centered-80 .controls-section,
+body.content-centered-80 .sidebar { /* 僅當 sidebar-expanded 同時存在時有效 */
     max-width: 80%; /* 佔頁面8成 */
+    margin-left: auto;
+    margin-right: auto;
 }
-body.content-centered .controls-section {
-    max-width: 80%; /* 佔頁面8成 */
+
+
+/* 當 body 有 viewer-active-layout 類別時 (選取項目且檢視器開啟時)：
+   搜尋區、側邊欄向左對齊並佔彈出視窗剩餘寬度的 80% */
+body.viewer-active-layout .controls-section,
+body.viewer-active-layout .sidebar {
+    max-width: calc(80% * (1200px - 600px) / 1200px); /* 80% of (container max-width - viewer max-width) relative to container */
+    max-width: 480px; /* 簡化計算：(1200-600)*0.8 = 480px */
+    margin-left: 0; /* 強制向左對齊 */
+    margin-right: auto; /* 將右側空間留白 */
 }
-body.content-centered .sidebar { /* 僅當 sidebar-expanded 同時存在時有效 */
-    max-width: 80%; /* 佔頁面8成 */
+body.viewer-active-layout .main-layout {
+    justify-content: flex-start; /* 將內容推向左邊 */
 }
 
 
@@ -599,11 +618,19 @@ body.viewer-active .content-display-area {
         flex-direction: column;
     }
 
-    /* 小螢幕下 content-centered 效果調整 */
-    body.content-centered .header-content,
-    body.content-centered .controls-section,
-    body.content-centered .sidebar {
+    /* 小螢幕下 content-centered-80 效果調整 */
+    body.content-centered-80 .header-content,
+    body.content-centered-80 .controls-section,
+    body.content-centered-80 .sidebar {
         max-width: 95%; /* 小螢幕下佔用更多空間 */
+    }
+
+    /* 小螢幕下 viewer-active-layout 效果調整 */
+    body.viewer-active-layout .controls-section,
+    body.viewer-active-layout .sidebar {
+        max-width: calc(95% - 20px); /* 考慮到左右padding，約95%寬度 */
+        margin-left: 10px; /* 調整左邊距 */
+        margin-right: 10px;
     }
 
 

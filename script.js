@@ -457,20 +457,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- 10. 主佈局更新邏輯 ---
     function updateMainLayoutClass() {
+        // 標題欄始終置中且寬度為 80%
+        document.body.classList.add('header-centered-80'); 
+
         if (currentItem === null) { // 沒有選中的檔案 (檢視器已關閉)
             document.body.classList.add('sidebar-expanded');
-            document.body.classList.add('content-centered'); // <-- 新增：內容置中並佔80%寬
+            document.body.classList.add('content-centered-80'); // 內容區（controls, sidebar）置中並佔80%寬
+            document.body.classList.remove('viewer-active-layout'); // 移除選中後的佈局類別
             contentDisplayArea.style.display = 'none'; // 隱藏佔位內容區
-        } else { // 有選中的檔案 (檢視器開啟或剛關閉)
+        } else { // 有選中的檔案
             document.body.classList.remove('sidebar-expanded');
-            document.body.classList.remove('content-centered'); // <-- 新增：內容恢復左對齊全寬
+            document.body.classList.remove('content-centered-80'); // 移除置中類別
             if (rightPanelViewer.classList.contains('active')) {
-                // 如果檢視器開啟，隱藏佔位內容區
-                contentDisplayArea.style.display = 'none';
+                document.body.classList.add('viewer-active-layout'); // 選中且檢視器開啟時的佈局
+                contentDisplayArea.style.display = 'none'; // 隱藏佔位內容區
                 document.body.classList.add('viewer-active');
-            } else {
-                // 如果檢視器關閉但有項目曾被選中，顯示佔位內容區
-                contentDisplayArea.style.display = 'flex';
+            } else { // 有選中檔案但檢視器未開啟 (可能剛關閉或尚未完全顯示)
+                document.body.classList.remove('viewer-active-layout'); // 移除檢視器開啟時的佈局
+                contentDisplayArea.style.display = 'flex'; // 顯示佔位內容區
                 document.body.classList.remove('viewer-active');
             }
         }
