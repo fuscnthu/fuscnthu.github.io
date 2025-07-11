@@ -1,7 +1,7 @@
 [
     {
         "path": "assets/images/morandi-palette.jpg",
-        "type": "image",
+        "type": "image", 
         "tags": ["設計", "色彩", "莫蘭迪"],
         "description": "專案中使用的莫蘭迪配色參考。"
     },
@@ -22,5 +22,11 @@
         "type": "document",
         "tags": ["首頁", "說明"],
         "description": "儲存庫的 README 文件，介紹專案。"
+    },
+    {
+        "path": "assets/images/1T8eOilZ7lfIw06DgTbL8w.png",
+        "type": "image",
+        "tags": ["測試", "圖片"],
+        "description": "用於測試深層資料夾的圖片。"
     }
 ]
