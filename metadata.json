@@ -23,45 +23,5 @@
             "Word"
         ],
         "description": "關於 遊園.docx 的簡要說明。"
-    },
-    {
-        "path": "index.html",
-        "type": "document",
-        "tags": [
-            "文件"
-        ],
-        "description": "關於 index.html 的簡要說明。"
-    },
-    {
-        "path": "package-lock.json",
-        "type": "document",
-        "tags": [
-            "文件"
-        ],
-        "description": "關於 package-lock.json 的簡要說明。"
-    },
-    {
-        "path": "package.json",
-        "type": "document",
-        "tags": [
-            "文件"
-        ],
-        "description": "關於 package.json 的簡要說明。"
-    },
-    {
-        "path": "script.js",
-        "type": "document",
-        "tags": [
-            "文件"
-        ],
-        "description": "關於 script.js 的簡要說明。"
-    },
-    {
-        "path": "style.css",
-        "type": "document",
-        "tags": [
-            "文件"
-        ],
-        "description": "關於 style.css 的簡要說明。"
     }
 ]
