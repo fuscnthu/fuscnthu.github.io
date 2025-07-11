@@ -51,6 +51,51 @@ header {
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
+/* ... (其他樣式不變) ... */
+
+/* 資料卡片內圖片的容器，用於控制圖片大小 */
+.item-card-image-container {
+    width: 100%;
+    height: 180px; /* 固定高度，讓卡片高度一致 */
+    overflow: hidden; /* 隱藏超出部分 */
+    display: flex; /* 使用 flexbox 讓圖片居中 */
+    align-items: center;
+    justify-content: center;
+    background-color: var(--border-color); /* 圖片載入前的背景色 */
+}
+
+.item-card-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 圖片會被裁剪以填充容器，保持比例 */
+    display: block;
+}
+
+/* 檔案圖示的樣式 (如果圖片無法顯示，會顯示這個) */
+.item-card .icon-placeholder {
+    font-size: 3em;
+    text-align: center;
+    padding: 1rem 0;
+    color: var(--primary-color);
+}
+
+/* 浮動視窗中，Word 檔案的下載連結樣式 */
+.modal-content-body .download-link {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--accent-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.modal-content-body .download-link:hover {
+    background-color: #A09497; /* 莫蘭迪粉的深一點版本 */
+}
+
 /* 標籤樣式 */
 .tags-container {
     display: flex;

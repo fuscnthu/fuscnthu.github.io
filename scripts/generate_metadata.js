@@ -10,6 +10,9 @@ const TARGET_DIR = '.'; // 要掃描的目標目錄 (這裡表示儲存庫根目
 const metadata = [];
 
 // 遞迴函數：掃描目錄並收集檔案資訊
+// ... (其他程式碼不變) ...
+
+// 遞迴函數：掃描目錄並收集檔案資訊
 function collectFiles(currentPath) {
     const files = fs.readdirSync(currentPath);
 
@@ -27,45 +30,43 @@ function collectFiles(currentPath) {
             if (!IGNORE_FILES.includes(fileName)) {
                 const relativePath = path.relative(TARGET_DIR, fullPath).replace(/\\/g, '/'); // 確保路徑是 / 分隔
 
-                // 根據副檔名自動判斷 type
                 let type = 'document'; // 預設為 document
                 const ext = path.extname(fileName).toLowerCase();
                 if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'].includes(ext)) {
                     type = 'image';
                 }
+                // 這裡不需要特別處理 .docx，因為它會被預設為 'document'
 
-                // 嘗試根據路徑或檔名自動生成標籤 (這是一個範例，您可以自訂規則)
                 let tags = [];
                 const pathParts = relativePath.split('/');
                 if (pathParts.length > 1) {
-                    // 將資料夾名稱作為標籤
                     const folderTag = pathParts[pathParts.length - 2];
-                    if (folderTag && !['assets', 'docs', 'images'].includes(folderTag.toLowerCase())) { // 排除通用資料夾名
+                    if (folderTag && !['assets', 'docs', 'images', 'test-folder'].includes(folderTag.toLowerCase())) { // 排除通用資料夾名，可以根據需要添加
                         tags.push(folderTag);
                     }
                 }
-                // 根據檔名包含的關鍵字添加標籤
                 if (fileName.toLowerCase().includes('report')) tags.push('報告');
                 if (fileName.toLowerCase().includes('plan')) tags.push('規劃');
                 if (fileName.toLowerCase().includes('design')) tags.push('設計');
                 if (fileName.toLowerCase().includes('overview') || fileName.toLowerCase().includes('summary')) tags.push('概述');
                 if (fileName.toLowerCase().includes('image') || type === 'image') tags.push('圖片');
                 if (fileName.toLowerCase().includes('document') || type === 'document') tags.push('文件');
-                
-                // 去重標籤
-                tags = [...new Set(tags)];
+                if (fileName.toLowerCase().endsWith('.docx')) tags.push('Word'); // 為 docx 檔案添加一個 Word 標籤
 
+                tags = [...new Set(tags)];
 
                 metadata.push({
                     path: relativePath,
                     type: type,
                     tags: tags,
-                    description: `關於 ${fileName} 的簡要說明。` // 預設描述，您可以手動在 metadata.json 編輯（但下次自動生成會覆蓋）
+                    description: `關於 ${fileName} 的簡要說明。`
                 });
             }
         }
     }
 }
+
+// ... (其他程式碼不變) ...
 
 // 執行掃描
 collectFiles(TARGET_DIR);
