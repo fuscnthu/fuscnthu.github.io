@@ -102,7 +102,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             parentElement = rootUl;
         }
 
-        const sortedKeys = Object.keys(tree).sort((a, b) => {
+        // --- 關鍵修正：過濾掉 _isFolder 屬性 ---
+        const filteredKeys = Object.keys(tree).filter(key => key !== '_isFolder');
+
+        const sortedKeys = filteredKeys.sort((a, b) => {
             const aIsFolder = tree[a]._isFolder;
             const bIsFolder = tree[b]._isFolder;
             if (aIsFolder && !bIsFolder) return -1;
@@ -115,7 +118,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const li = document.createElement('li');
             const fullPath = currentPath ? `${currentPath}/${key}` : key;
 
-            if (item._isFolder) {
+            if (item && item._isFolder) { // 加上 item 存在檢查，雖然在當前邏輯下通常不會是 null/undefined
                 const folderDiv = document.createElement('div');
                 folderDiv.className = 'folder';
                 folderDiv.innerHTML = `<span class="folder-icon">📂</span> ${key}`;
@@ -129,8 +132,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     ul.style.display = ul.style.display === 'none' ? 'block' : 'none';
                     folderDiv.querySelector('.folder-icon').textContent = ul.style.display === 'none' ? '📂' : '📁';
                 });
-                renderFileTree(item, ul, fullPath);
-            } else {
+                renderFileTree(item, ul, fullPath); // 遞迴呼叫
+            } else if (item) { // 確保 item 存在才嘗試渲染為檔案
                 const fileDiv = document.createElement('div');
                 fileDiv.className = 'file';
                 const icon = item.type === 'image' ? '🖼️' : (item.name.toLowerCase().endsWith('.pdf') ? '📄' : (item.name.toLowerCase().endsWith('.docx') ? '📝' : '📜'));
@@ -142,6 +145,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     fileDiv.classList.add('active');
                     showViewer(item);
                 });
+            } else {
+                console.warn(`在路徑 ${fullPath} 處發現一個非資料夾且沒有有效 item 的鍵: ${key}`);
+                continue; // 跳過此項以避免更多錯誤
             }
             parentElement.appendChild(li);
         }
