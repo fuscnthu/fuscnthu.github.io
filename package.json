@@ -1,0 +1,27 @@
+{
+  "name": "fuscnthu.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuscnthu/fuscnthu.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/fuscnthu/fuscnthu.github.io/issues"
+  },
+  "homepage": "https://github.com/fuscnthu/fuscnthu.github.io#readme",
+  "dependencies": {
+    "path-browserify": "^1.0.1"
+  }
+}

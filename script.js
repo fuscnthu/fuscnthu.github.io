@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // --- 請務必替換成你的 GitHub 帳號和儲存庫名稱 ---
-    const GITHUB_USERNAME = '你的GitHub帳號';
-    const REPO_NAME = '你的儲存庫名稱';
+    const GITHUB_USERNAME = 'fuscnthu'; // 你的 GitHub 使用者名稱
+    const REPO_NAME = 'fuscnthu.github.io'; // 你的儲存庫名稱
     // --- 以上 ---
 
     const METADATA_FILE = 'metadata.json'; // 儲存庫根目錄下的中介資料檔名

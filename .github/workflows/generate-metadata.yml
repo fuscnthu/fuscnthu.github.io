@@ -1,0 +1,38 @@
+name: Generate Metadata JSON
+
+on:
+  push:
+    branches:
+      - main # 當推送到 main 分支時觸發此工作流程
+      - master # 如果你的主分支是 master, 也請加上
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 在 Ubuntu 環境下執行
+
+    steps:
+    - name: Checkout repository # 步驟1: 檢出儲存庫代碼
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # 獲取所有歷史提交，以便後續可以推送
+
+    - name: Set up Node.js # 步驟2: 設定 Node.js 環境
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18' # 使用 Node.js 18 版本
+
+    - name: Install dependencies # 步驟3: 安裝腳本所需的依賴
+      run: npm install path-browserify # 這裡我們需要 path-browserify 來處理路徑
+
+    - name: Generate metadata.json # 步驟4: 執行生成 metadata 的 Node.js 腳本
+      run: node scripts/generate_metadata.js
+
+    - name: Commit and push metadata.json # 步驟5: 提交並推送更新後的 metadata.json
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add metadata.json
+        git commit -m "Auto-generate metadata.json" || echo "No changes to commit"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 使用 GitHub 提供的自動驗證 token
