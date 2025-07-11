@@ -55,6 +55,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 };
             });
 
+            // --- 新增功能：隱藏 'utils/' 資料夾下的檔案 ---
+            allItems = allItems.filter(item => !item.path.startsWith('utils/'));
+
             fileTreeData = buildFileTree(allItems);
 
             loadingMessage.style.display = 'none';
@@ -102,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             parentElement = rootUl;
         }
 
-        // --- 關鍵修正：過濾掉 _isFolder 屬性 ---
+        // --- 修正：過濾掉 _isFolder 屬性，避免在遍歷時將其誤讀為檔案 ---
         const filteredKeys = Object.keys(tree).filter(key => key !== '_isFolder');
 
         const sortedKeys = filteredKeys.sort((a, b) => {
@@ -118,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const li = document.createElement('li');
             const fullPath = currentPath ? `${currentPath}/${key}` : key;
 
-            if (item && item._isFolder) { // 加上 item 存在檢查，雖然在當前邏輯下通常不會是 null/undefined
+            if (item && item._isFolder) { 
                 const folderDiv = document.createElement('div');
                 folderDiv.className = 'folder';
                 folderDiv.innerHTML = `<span class="folder-icon">📂</span> ${key}`;
@@ -132,8 +135,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     ul.style.display = ul.style.display === 'none' ? 'block' : 'none';
                     folderDiv.querySelector('.folder-icon').textContent = ul.style.display === 'none' ? '📂' : '📁';
                 });
-                renderFileTree(item, ul, fullPath); // 遞迴呼叫
-            } else if (item) { // 確保 item 存在才嘗試渲染為檔案
+                renderFileTree(item, ul, fullPath); 
+            } else if (item) { 
                 const fileDiv = document.createElement('div');
                 fileDiv.className = 'file';
                 const icon = item.type === 'image' ? '🖼️' : (item.name.toLowerCase().endsWith('.pdf') ? '📄' : (item.name.toLowerCase().endsWith('.docx') ? '📝' : '📜'));
@@ -147,7 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             } else {
                 console.warn(`在路徑 ${fullPath} 處發現一個非資料夾且沒有有效 item 的鍵: ${key}`);
-                continue; // 跳過此項以避免更多錯誤
+                continue; 
             }
             parentElement.appendChild(li);
         }
@@ -237,7 +240,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             // 如果快取中沒有，則進行網路請求
             try {
-                if (item.type === 'document' && fileExtension !== 'pdf') {
+                if (item.type === 'document' && fileExtension !== 'pdf') { // 文檔類型，且不是 PDF
                     const response = await fetch(item.download_url);
                     if (!response.ok) throw new Error(`無法獲取內容: ${response.statusText}`);
                     const rawContent = await response.text();
@@ -249,7 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <p style="text-align: center;">此為 Word 文件，無法直接預覽。</p>
                             <a href="${item.download_url}" class="download-link" download="${item.name}">點此下載 ${item.name}</a>
                         `;
-                    } else {
+                    } else { // 其他不支援預覽的文檔類型
                         contentHTML = `
                             <p style="text-align: center;">檔案類型 ${fileExtension} 不支援直接預覽。</p>
                             <a href="${item.download_url}" class="download-link" download="${item.name}">點此下載 ${item.name}</a>
@@ -263,10 +266,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     contentHTML = `<img src="${item.download_url}" alt="${item.name}">`;
                     // 不快取圖片的 HTML 字符串，因為圖片資料本身由瀏覽器快取
                 } else if (fileExtension === 'pdf') {
-                    // PDF 直接使用 iframe 嵌入，瀏覽器會自行處理 PDF 載入和快取
-                    contentHTML = `<iframe src="${item.download_url}" frameborder="0"></iframe>`;
+                    // --- 修正：PDF 使用 Google Docs Viewer 嵌入預覽 ---
+                    contentHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(item.download_url)}&embedded=true" frameborder="0"></iframe>`;
                     // 不快取 PDF 的 HTML 字符串
-                } else {
+                } else { // 處理未指定 type 但有預覽需求的檔案，或無法歸類的
                     contentHTML = `<p>檔案類型 "${item.type}" 或副檔名無法預覽。</p>`;
                     // 這些通用提示也可以快取
                     cacheManager.set(item.path, contentHTML);
