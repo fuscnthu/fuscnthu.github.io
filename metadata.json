@@ -1,32 +1,66 @@
 [
     {
-        "path": "assets/images/morandi-palette.jpg",
-        "type": "image", 
-        "tags": ["設計", "色彩", "莫蘭迪"],
-        "description": "專案中使用的莫蘭迪配色參考。"
-    },
-    {
-        "path": "docs/project-overview.md",
-        "type": "document",
-        "tags": ["專案", "文件", "概述"],
-        "description": "關於本專案的詳細說明文件。"
-    },
-    {
-        "path": "docs/report-2025.pdf",
-        "type": "document",
-        "tags": ["報告", "文件", "2025"],
-        "description": "2025 年專案進度報告。"
-    },
-    {
-        "path": "README.md",
-        "type": "document",
-        "tags": ["首頁", "說明"],
-        "description": "儲存庫的 README 文件，介紹專案。"
-    },
-    {
         "path": "assets/images/1T8eOilZ7lfIw06DgTbL8w.png",
         "type": "image",
-        "tags": ["測試", "圖片"],
-        "description": "用於測試深層資料夾的圖片。"
+        "tags": [
+            "圖片"
+        ],
+        "description": "關於 1T8eOilZ7lfIw06DgTbL8w.png 的簡要說明。"
+    },
+    {
+        "path": "docs/元雜劇體製規律的淵源與形成.pdf",
+        "type": "document",
+        "tags": [
+            "文件"
+        ],
+        "description": "關於 元雜劇體製規律的淵源與形成.pdf 的簡要說明。"
+    },
+    {
+        "path": "docs/遊園.docx",
+        "type": "document",
+        "tags": [
+            "文件"
+        ],
+        "description": "關於 遊園.docx 的簡要說明。"
+    },
+    {
+        "path": "index.html",
+        "type": "document",
+        "tags": [
+            "文件"
+        ],
+        "description": "關於 index.html 的簡要說明。"
+    },
+    {
+        "path": "package-lock.json",
+        "type": "document",
+        "tags": [
+            "文件"
+        ],
+        "description": "關於 package-lock.json 的簡要說明。"
+    },
+    {
+        "path": "package.json",
+        "type": "document",
+        "tags": [
+            "文件"
+        ],
+        "description": "關於 package.json 的簡要說明。"
+    },
+    {
+        "path": "script.js",
+        "type": "document",
+        "tags": [
+            "文件"
+        ],
+        "description": "關於 script.js 的簡要說明。"
+    },
+    {
+        "path": "style.css",
+        "type": "document",
+        "tags": [
+            "文件"
+        ],
+        "description": "關於 style.css 的簡要說明。"
     }
 ]
