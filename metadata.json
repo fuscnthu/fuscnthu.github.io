@@ -1,0 +1,26 @@
+[
+    {
+        "path": "assets/images/morandi-palette.jpg",
+        "type": "image",
+        "tags": ["設計", "色彩", "莫蘭迪"],
+        "description": "專案中使用的莫蘭迪配色參考。"
+    },
+    {
+        "path": "docs/project-overview.md",
+        "type": "document",
+        "tags": ["專案", "文件", "概述"],
+        "description": "關於本專案的詳細說明文件。"
+    },
+    {
+        "path": "docs/report-2025.pdf",
+        "type": "document",
+        "tags": ["報告", "文件", "2025"],
+        "description": "2025 年專案進度報告。"
+    },
+    {
+        "path": "README.md",
+        "type": "document",
+        "tags": ["首頁", "說明"],
+        "description": "儲存庫的 README 文件，介紹專案。"
+    }
+]
