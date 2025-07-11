@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (item && item._isFolder) {
                 const folderDiv = document.createElement('div');
                 folderDiv.className = 'folder-item';
-                folderDiv.innerHTML = `<span class="icon">📂</span> ${key}`;
+                folderDiv.innerHTML = `<span class="icon">📂</span> <span class="name">${key}</span>`;
                 li.appendChild(folderDiv);
 
                 // 點擊資料夾進入下一層
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const fileDiv = document.createElement('div');
                 fileDiv.className = 'file-item';
                 const icon = item.type === 'image' ? '🖼️' : (item.name.toLowerCase().endsWith('.pdf') ? '📄' : (item.name.toLowerCase().endsWith('.docx') ? '📝' : '📜'));
-                fileDiv.innerHTML = `<span class="icon">${icon}</span> ${key}`;
+                fileDiv.innerHTML = `<span class="icon">${icon}</span> <span class="name">${key}</span>`;
                 li.appendChild(fileDiv);
 
                 // 點擊檔案顯示檢視器
@@ -459,9 +459,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateMainLayoutClass() {
         if (currentItem === null) { // 沒有選中的檔案 (檢視器已關閉)
             document.body.classList.add('sidebar-expanded');
+            document.body.classList.add('content-centered'); // <-- 新增：內容置中並佔80%寬
             contentDisplayArea.style.display = 'none'; // 隱藏佔位內容區
         } else { // 有選中的檔案 (檢視器開啟或剛關閉)
             document.body.classList.remove('sidebar-expanded');
+            document.body.classList.remove('content-centered'); // <-- 新增：內容恢復左對齊全寬
             if (rightPanelViewer.classList.contains('active')) {
                 // 如果檢視器開啟，隱藏佔位內容區
                 contentDisplayArea.style.display = 'none';

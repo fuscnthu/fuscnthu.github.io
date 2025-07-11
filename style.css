@@ -34,37 +34,41 @@ body {
 
 /* 網頁標頭 */
 header {
-    /* header 本身不再有背景和陰影，只做為容器 */
     text-align: center;
     padding: 1.5rem 1rem; /* 保持一些垂直間距 */
     margin-bottom: 2rem;
 }
 
 .header-content {
-    background-color: rgba(var(--card-background-rgb), 0.7); /* 半透明 */
+    background-color: rgba(var(--card-background-rgb), 0.8); /* 半透明 */
     backdrop-filter: blur(5px); /* 毛玻璃效果 */
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     border-radius: 15px; /* 圓角 */
-    max-width: 1200px; /* 寬度與 container 相同 */
+    max-width: 1200px; /* 預設寬度與 container 相同 */
     margin: 0 auto; /* 居中 */
     padding: 1rem 2rem; /* 內容內邊距 */
+    transition: max-width 0.3s ease-out; /* 過渡動畫 */
 }
 
 /* 容器與主要佈局 */
 .container {
-    max-width: 1200px;
-    margin: 0 auto 2rem auto; /* 上方沒有 margin-top 了，讓 header 貼合 */
+    max-width: 1200px; /* 預設最大寬度 */
+    margin: 0 auto 2rem auto;
     padding: 0 1rem;
     flex-grow: 1; /* 讓 main 區塊填充剩餘空間 */
 }
 
 .controls-section {
-    background-color: rgba(var(--card-background-rgb), 0.7); /* 半透明 */
+    background-color: rgba(var(--card-background-rgb), 0.8); /* 半透明 */
     backdrop-filter: blur(5px);
     padding: 1.5rem;
     border-radius: 15px; /* 圓角 */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     margin-bottom: 2rem;
+    max-width: 100%; /* 預設佔滿 container 寬度 */
+    margin-left: auto;
+    margin-right: auto;
+    transition: max-width 0.3s ease-out; /* 過渡動畫 */
 }
 
 .search-bar {
@@ -134,7 +138,7 @@ hr {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    transition: flex 0.3s ease-out, width 0.3s ease-out; /* 寬度過渡 */
+    transition: flex 0.3s ease-out, width 0.3s ease-out, max-width 0.3s ease-out; /* 寬度過渡 */
 }
 
 /* 當 body 有 sidebar-expanded 類別時：檔案瀏覽區擴展 */
@@ -143,13 +147,25 @@ body.sidebar-expanded .main-layout {
 }
 body.sidebar-expanded .sidebar {
     width: 100%; /* 擴展到 container 的寬度 */
-    max-width: 100%;
+    max-width: 100%; /* 確保不超過父容器 */
     flex: 1 1 auto; /* 允許它佔滿空間 */
     margin-bottom: 2rem; /* 在下方增加間距 */
 }
 body.sidebar-expanded .content-display-area {
     display: none; /* 隱藏佔位內容區 */
 }
+
+/* 當 body 有 content-centered 類別時：標題欄、搜尋區、側邊欄置中並縮窄 */
+body.content-centered .header-content {
+    max-width: 80%; /* 佔頁面8成 */
+}
+body.content-centered .controls-section {
+    max-width: 80%; /* 佔頁面8成 */
+}
+body.content-centered .sidebar { /* 僅當 sidebar-expanded 同時存在時有效 */
+    max-width: 80%; /* 佔頁面8成 */
+}
+
 
 /* 當 body 有 viewer-active 類別時：檢視器開啟，側邊欄保持窄 */
 body.viewer-active .main-layout {
@@ -181,7 +197,7 @@ body.viewer-active .content-display-area {
 /* 檔案路徑導覽 (麵包屑) */
 .file-tree-path {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* 允許換行 */
     align-items: center;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
@@ -197,6 +213,8 @@ body.viewer-active .content-display-area {
     padding: 0.2rem 0.4rem;
     border-radius: 5px;
     transition: background-color 0.2s, color 0.2s;
+    white-space: normal; /* 允許路徑片段換行 */
+    word-wrap: break-word; /* 長單字換行 */
 }
 
 .path-segment:hover {
@@ -208,6 +226,7 @@ body.viewer-active .content-display-area {
     color: rgba(var(--primary-color-rgb), 0.7);
     margin: 0 0.2rem;
     font-size: 0.95rem;
+    white-space: nowrap; /* 分隔符不換行 */
 }
 
 /* 檔案列表 */
@@ -229,7 +248,7 @@ body.viewer-active .content-display-area {
     border-radius: 8px;
     cursor: pointer;
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* 圖標與文字頂部對齊 */
     gap: 0.8rem;
     transition: background-color 0.2s, transform 0.1s;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -251,6 +270,16 @@ body.viewer-active .content-display-area {
 .icon {
     font-size: 1.2em;
     line-height: 1;
+    flex-shrink: 0; /* 防止圖標縮小 */
+    margin-top: 0.1em; /* 輕微調整對齊 */
+}
+
+.folder-item .name, .file-item .name { /* 目標名稱文本 */
+    white-space: normal; /* 允許換行 */
+    word-wrap: break-word; /* 長單字換行 */
+    overflow-wrap: break-word; /* 現代等效屬性 */
+    flex-grow: 1; /* 允許名稱填充可用空間 */
+    min-width: 0; /* 允許在 flex 項目中縮小 */
 }
 
 
@@ -466,7 +495,7 @@ body.viewer-active .content-display-area {
     flex-direction: column;
     gap: 8px; /* 項目間距 */
     min-width: 150px;
-    max-width: 250px;
+    max-width: 250px; /* 調整最大寬度以更好地容納換行文本 */
     box-sizing: border-box; /* 確保 padding 不增加寬度 */
     transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
@@ -493,7 +522,7 @@ body.viewer-active .content-display-area {
 
 .pinned-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* 圖標與文字頂部對齊 */
     justify-content: space-between;
     background-color: rgba(var(--accent-color-rgb), 0.2); /* 較淺的背景 */
     padding: 8px 10px;
@@ -509,21 +538,25 @@ body.viewer-active .content-display-area {
 
 .pinned-item-info {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     flex-grow: 1;
-    white-space: nowrap; /* 不換行 */
-    overflow: hidden; /* 超出隱藏 */
-    text-overflow: ellipsis; /* 顯示省略號 */
+    /* white-space: nowrap; 移除此屬性以允許換行 */
+    overflow: hidden; /* 保持隱藏超出部分 */
+    /* text-overflow: ellipsis; 移除此屬性 */
 }
 .pinned-item-info .icon {
     font-size: 1.1em;
     margin-right: 8px;
     flex-shrink: 0; /* 防止縮小 */
+    margin-top: 0.1em; /* 輕微調整對齊 */
 }
 .pinned-item-info .name {
     flex-grow: 1;
     overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal; /* 允許換行 */
+    word-wrap: break-word; /* 長單字換行 */
+    overflow-wrap: break-word; /* 現代等效屬性 */
+    min-width: 0; /* 允許在 flex 項目中縮小 */
 }
 
 
@@ -566,6 +599,14 @@ body.viewer-active .content-display-area {
         flex-direction: column;
     }
 
+    /* 小螢幕下 content-centered 效果調整 */
+    body.content-centered .header-content,
+    body.content-centered .controls-section,
+    body.content-centered .sidebar {
+        max-width: 95%; /* 小螢幕下佔用更多空間 */
+    }
+
+
     .content-display-area {
         height: 50vh; /* 在小螢幕上給予內容區一定高度 */
         display: flex !important; /* 強制顯示，因為檢視器會覆蓋 */
@@ -600,6 +641,6 @@ body.viewer-active .content-display-area {
         left: 10px;
         max-height: 50vh; /* 小螢幕下限制高度 */
         min-width: 100px;
-        max-width: 200px;
+        max-width: 180px; /* 小螢幕下釘選面板也適當調整 */
     }
 }
