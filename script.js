@@ -3,7 +3,6 @@ import { CacheManager } from './utils/cacheManager.js'; // 請確保路徑正確
 document.addEventListener('DOMContentLoaded', async () => {
     
     // --- 網站設定常數 ---
-    // 這部分需要替換為您的 GitHub 帳號和儲存庫名稱。
     const GITHUB_USERNAME = 'fuscnthu'; // GitHub 使用者名稱
     const REPO_NAME = 'fuscnthu.github.io'; // 儲存庫名稱
     const METADATA_FILE = 'metadata.json'; // 儲存庫根目錄下的中介資料檔名
@@ -11,7 +10,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- DOM 元素引用 ---
     const searchInput = document.getElementById('searchInput');
     const tagsContainer = document.getElementById('tags-container');
-    const fileTreeContainer = document.getElementById('file-tree'); // 新增的檔案樹容器
     const loadingMessage = document.getElementById('loading-message');
     const rightPanelViewer = document.getElementById('right-panel-viewer');
     const viewerTitle = document.getElementById('viewer-title');
@@ -19,13 +17,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const viewerPinButton = document.getElementById('viewer-pin-button');
     const viewerNewTabButton = document.getElementById('viewer-new-tab-button');
     const viewerCloseButton = document.getElementById('viewer-close-button');
-    const contentDisplayArea = document.getElementById('content-display-area'); // 新增的內容顯示區
+    const contentDisplayArea = document.getElementById('content-display-area');
+
+    // 新增的 DOM 元素引用
+    const fileTreePathContainer = document.getElementById('file-tree-path');
+    const homeButton = document.getElementById('home-button');
+    const fileListContainer = document.getElementById('file-list'); // 原來的 fileTreeContainer 改名
 
     // --- 全域變數 ---
-    let allItems = [];
-    let fileTreeData = {};
+    let allItems = []; // 包含所有檔案的原始列表
+    let fileTreeData = {}; // 完整的樹狀結構資料
+    let currentPathParts = []; // 當前瀏覽的路徑片段，如 ['docs', 'subfolder']
+    let currentDisplayTree = {}; // 當前正在顯示的資料夾樹狀物件
     let pinnedItems = JSON.parse(localStorage.getItem('pinnedItems')) || [];
-    let currentItem = null;
+    let currentItem = null; // 當前在檢視器中打開的項目
 
     // 實例化 CacheManager
     const cacheManager = new CacheManager();
@@ -55,20 +60,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 };
             });
 
-            // --- 新增功能：隱藏 'utils/' 資料夾下的檔案 ---
+            // 隱藏 'utils/' 資料夾下的檔案
             allItems = allItems.filter(item => !item.path.startsWith('utils/'));
 
             fileTreeData = buildFileTree(allItems);
+            
+            // 初始化時設定當前顯示的資料為根目錄
+            navigateTo([]); // 導航到根目錄，這會觸發 renderCurrentLevel 和 renderBreadcrumbs
 
             loadingMessage.style.display = 'none';
-            renderFileTree(fileTreeData);
             renderTags();
-            contentDisplayArea.style.display = 'flex'; // 顯示內容顯示區
+            contentDisplayArea.style.display = 'flex';
+            updatePinButtonState(); // 初始化時更新釘選按鈕狀態
 
         } catch (error) {
             console.error('初始化資料失敗:', error);
             loadingMessage.textContent = `載入資料失敗：${error.message}。請確保儲存庫公開，並 ${METADATA_FILE} 存在且格式正確。`;
-            fileTreeContainer.innerHTML = '';
+            fileListContainer.innerHTML = ''; // 清空列表
         }
     }
 
@@ -95,70 +103,121 @@ document.addEventListener('DOMContentLoaded', async () => {
         return tree;
     }
 
-    // --- 3. 檔案樹渲染 (renderFileTree) ---
-    function renderFileTree(tree, parentElement = fileTreeContainer, currentPath = '') {
-        if (parentElement === fileTreeContainer) {
-            parentElement.innerHTML = '';
-            const rootUl = document.createElement('ul');
-            rootUl.className = 'file-tree-root';
-            parentElement.appendChild(rootUl);
-            parentElement = rootUl;
+    // --- 3. 渲染當前層級的檔案和資料夾 (renderCurrentLevel) ---
+    function renderCurrentLevel(treeToRender) {
+        fileListContainer.innerHTML = ''; // 清空現有列表
+
+        if (!treeToRender) {
+            fileListContainer.innerHTML = '<p>此資料夾沒有內容。</p>';
+            return;
         }
 
-        // --- 修正：過濾掉 _isFolder 屬性，避免在遍歷時將其誤讀為檔案 ---
-        const filteredKeys = Object.keys(tree).filter(key => key !== '_isFolder');
+        const filteredKeys = Object.keys(treeToRender).filter(key => key !== '_isFolder');
 
         const sortedKeys = filteredKeys.sort((a, b) => {
-            const aIsFolder = tree[a]._isFolder;
-            const bIsFolder = tree[b]._isFolder;
-            if (aIsFolder && !bIsFolder) return -1;
-            if (!aIsFolder && bIsFolder) return 1;
-            return a.localeCompare(b);
+            const aIsFolder = treeToRender[a]._isFolder;
+            const bIsFolder = treeToRender[b]._isFolder;
+            if (aIsFolder && !bIsFolder) return -1; // 資料夾在前
+            if (!aIsFolder && bIsFolder) return 1; // 檔案在後
+            return a.localeCompare(b); // 按名稱排序
         });
 
         for (const key of sortedKeys) {
-            const item = tree[key];
+            const item = treeToRender[key];
             const li = document.createElement('li');
-            const fullPath = currentPath ? `${currentPath}/${key}` : key;
+            li.className = 'file-list-item'; // 新增 CSS class
 
-            if (item && item._isFolder) { 
+            if (item && item._isFolder) {
                 const folderDiv = document.createElement('div');
-                folderDiv.className = 'folder';
-                folderDiv.innerHTML = `<span class="folder-icon">📂</span> ${key}`;
+                folderDiv.className = 'folder-item';
+                folderDiv.innerHTML = `<span class="icon">📂</span> ${key}`;
                 li.appendChild(folderDiv);
 
-                const ul = document.createElement('ul');
-                ul.style.display = 'none';
-                li.appendChild(ul);
-
+                // 點擊資料夾進入下一層
                 folderDiv.addEventListener('click', () => {
-                    ul.style.display = ul.style.display === 'none' ? 'block' : 'none';
-                    folderDiv.querySelector('.folder-icon').textContent = ul.style.display === 'none' ? '📂' : '📁';
+                    const newPathParts = [...currentPathParts, key];
+                    navigateTo(newPathParts);
                 });
-                renderFileTree(item, ul, fullPath); 
-            } else if (item) { 
+            } else if (item) {
                 const fileDiv = document.createElement('div');
-                fileDiv.className = 'file';
+                fileDiv.className = 'file-item';
                 const icon = item.type === 'image' ? '🖼️' : (item.name.toLowerCase().endsWith('.pdf') ? '📄' : (item.name.toLowerCase().endsWith('.docx') ? '📝' : '📜'));
-                fileDiv.innerHTML = `${icon} ${key}`;
+                fileDiv.innerHTML = `<span class="icon">${icon}</span> ${key}`;
                 li.appendChild(fileDiv);
 
+                // 點擊檔案顯示檢視器
                 fileDiv.addEventListener('click', () => {
-                    document.querySelectorAll('.file.active').forEach(el => el.classList.remove('active'));
+                    document.querySelectorAll('.file-item.active').forEach(el => el.classList.remove('active'));
                     fileDiv.classList.add('active');
                     showViewer(item);
                 });
             } else {
-                console.warn(`在路徑 ${fullPath} 處發現一個非資料夾且沒有有效 item 的鍵: ${key}`);
-                continue; 
+                console.warn(`在當前資料夾中發現無效項目: ${key}`);
+                continue;
             }
-            parentElement.appendChild(li);
+            fileListContainer.appendChild(li);
         }
     }
 
-    // --- 4. 標籤渲染與排序 (renderTags, updateTagOrder) ---
+    // --- 4. 渲染路徑導覽 (麵包屑) ---
+    function renderBreadcrumbs() {
+        fileTreePathContainer.innerHTML = ''; // 清空現有麵包屑
+
+        // 添加首頁按鈕
+        fileTreePathContainer.appendChild(homeButton);
+
+        let currentPath = '';
+        currentPathParts.forEach((part, index) => {
+            currentPath += (currentPath ? '/' : '') + part;
+            
+            const separator = document.createElement('span');
+            separator.className = 'path-separator';
+            separator.textContent = ' / ';
+            fileTreePathContainer.appendChild(separator);
+
+            const pathSegmentButton = document.createElement('button');
+            pathSegmentButton.className = 'path-segment';
+            pathSegmentButton.textContent = part;
+            // 點擊麵包屑中的某一段，導航到該路徑
+            pathSegmentButton.addEventListener('click', () => {
+                navigateTo(currentPathParts.slice(0, index + 1));
+            });
+            fileTreePathContainer.appendChild(pathSegmentButton);
+        });
+    }
+
+    // --- 5. 導航到指定路徑 ---
+    function navigateTo(pathArray) {
+        currentPathParts = pathArray;
+        let tempTree = fileTreeData;
+
+        // 遍歷路徑以獲取正確的子樹
+        for (const part of currentPathParts) {
+            if (tempTree && tempTree[part]) {
+                tempTree = tempTree[part];
+            } else {
+                // 路徑無效，回到根目錄
+                console.warn(`無效的路徑片段: ${part}，導航回根目錄。`);
+                currentPathParts = [];
+                tempTree = fileTreeData;
+                break;
+            }
+        }
+        currentDisplayTree = tempTree;
+        renderCurrentLevel(currentDisplayTree); // 渲染當前層級內容
+        renderBreadcrumbs(); // 更新麵包屑導覽
+        hideViewer(); // 導航後關閉檢視器
+    }
+    
+    // 首頁按鈕事件監聽器
+    homeButton.addEventListener('click', () => navigateTo([]));
+
+
+    // --- 6. 標籤渲染與排序 (renderTags, updateTagOrder) ---
     function renderTags() {
-        const allTags = [...new Set(allItems.flatMap(item => item.tags))];
+        // 過濾掉被隱藏的 utils 項目，只顯示當前可見項目的標籤
+        const visibleItems = allItems.filter(item => !item.path.startsWith('utils/'));
+        const allTags = [...new Set(visibleItems.flatMap(item => item.tags))];
         tagsContainer.innerHTML = '';
 
         const currentActiveTags = Array.from(document.querySelectorAll('.tag.active')).map(tag => tag.textContent);
@@ -199,12 +258,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         inactiveTags.forEach(tagSpan => tagsContainer.appendChild(tagSpan));
     }
 
-    // --- 5. 搜尋與篩選邏輯 (applyFilters) ---
+    // --- 7. 搜尋與篩選邏輯 (applyFilters) ---
     function applyFilters() {
         const searchTerm = searchInput.value.toLowerCase();
         const activeTags = Array.from(document.querySelectorAll('.tag.active')).map(tag => tag.textContent);
 
         const filteredItems = allItems.filter(item => {
+            // 首先過濾掉 utils 項目
+            if (item.path.startsWith('utils/')) return false;
+
             const matchesSearch = item.name.toLowerCase().includes(searchTerm) || 
                                   item.description.toLowerCase().includes(searchTerm) ||
                                   item.tags.some(tag => tag.toLowerCase().includes(searchTerm));
@@ -214,8 +276,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             return matchesSearch && matchesTags;
         });
         
-        const filteredTree = buildFileTree(filteredItems);
-        renderFileTree(filteredTree);
+        const filteredTree = buildFileTree(filteredItems); // 重新建立篩選後的樹
+
+        // 根據當前路徑找到在篩選後樹中的對應節點
+        let currentFilteredDisplayTree = filteredTree;
+        for (const part of currentPathParts) {
+            if (currentFilteredDisplayTree && currentFilteredDisplayTree[part]) {
+                currentFilteredDisplayTree = currentFilteredDisplayTree[part];
+            } else {
+                // 如果篩選後的樹中沒有當前路徑，則顯示根目錄或空
+                currentFilteredDisplayTree = {}; // 顯示空內容
+                break;
+            }
+        }
+        renderCurrentLevel(currentFilteredDisplayTree); // 渲染篩選後的當前層級內容
 
         if (currentItem && !filteredItems.some(item => item.path === currentItem.path)) {
             hideViewer();
@@ -223,7 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     searchInput.addEventListener('input', applyFilters);
 
-    // --- 6. 右側檢視器功能 (showViewer, hideViewer, togglePin, updatePinButtonState) ---
+    // --- 8. 右側檢視器功能 (showViewer, hideViewer, togglePin, updatePinButtonState) ---
     async function showViewer(item) {
         currentItem = item;
         viewerTitle.textContent = item.name;
@@ -232,13 +306,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         let contentHTML = '';
         const fileExtension = item.name.toLowerCase().split('.').pop();
 
-        // 嘗試從 CacheManager 獲取快取內容
         let cachedContent = cacheManager.get(item.path);
 
         if (cachedContent) {
-            contentHTML = cachedContent; // 直接使用快取內容
+            contentHTML = cachedContent;
         } else {
-            // 如果快取中沒有，則進行網路請求
             try {
                 if (item.type === 'document' && fileExtension !== 'pdf') { // 文檔類型，且不是 PDF
                     const response = await fetch(item.download_url);
@@ -258,34 +330,28 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <a href="${item.download_url}" class="download-link" download="${item.name}">點此下載 ${item.name}</a>
                         `;
                     }
-                    // 將新獲取的內容存入快取 (預設 persistent=true，會存入 localStorage)
                     cacheManager.set(item.path, contentHTML);
 
                 } else if (item.type === 'image') {
-                    // 圖片直接使用 download_url，瀏覽器會自行處理圖片快取
                     contentHTML = `<img src="${item.download_url}" alt="${item.name}">`;
-                    // 不快取圖片的 HTML 字符串，因為圖片資料本身由瀏覽器快取
                 } else if (fileExtension === 'pdf') {
-                    // --- 修正：PDF 使用 Google Docs Viewer 嵌入預覽 ---
+                    // --- 優化：PDF 使用 Google Docs Viewer 嵌入預覽 ---
                     contentHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(item.download_url)}&embedded=true" frameborder="0"></iframe>`;
-                    // 不快取 PDF 的 HTML 字符串
-                } else { // 處理未指定 type 但有預覽需求的檔案，或無法歸類的
+                } else { 
                     contentHTML = `<p>檔案類型 "${item.type}" 或副檔名無法預覽。</p>`;
-                    // 這些通用提示也可以快取
                     cacheManager.set(item.path, contentHTML);
                 }
 
             } catch (error) {
                 console.error('預覽內容載入失敗:', error);
                 contentHTML = `<p style="color: red;">載入預覽內容失敗：${error.message}。請確認 ${item.path} 存在。</p>`;
-                // 錯誤訊息也可以快取，避免重複失敗請求
-                cacheManager.set(item.path, contentHTML, false); // 錯誤訊息可以只在 session 快取
+                cacheManager.set(item.path, contentHTML, false);
             }
         }
         
         viewerContent.innerHTML = contentHTML;
 
-        updatePinButtonState();
+        updatePinButtonState(); // 更新釘選按鈕狀態
         viewerNewTabButton.href = item.download_url;
 
         rightPanelViewer.classList.add('active'); // 顯示右側檢視器
@@ -296,7 +362,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         rightPanelViewer.classList.remove('active');
         currentItem = null;
         viewerContent.innerHTML = '';
-        document.querySelectorAll('.file.active').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.file-item.active').forEach(el => el.classList.remove('active'));
         contentDisplayArea.style.display = 'flex'; // 顯示佔位內容區
     }
 
@@ -315,16 +381,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         localStorage.setItem('pinnedItems', JSON.stringify(pinnedItems));
-        updatePinButtonState();
+        updatePinButtonState(); // 更新釘選按鈕顯示狀態
     }
 
     function updatePinButtonState() {
         if (currentItem) {
             const isPinned = pinnedItems.some(p => p.path === currentItem.path);
             viewerPinButton.textContent = isPinned ? '★ 已釘選' : '★ 釘選';
+        } else {
+            viewerPinButton.textContent = '★ 釘選'; // 沒有選中項目時顯示預設狀態
         }
     }
 
-    // --- 7. 網站啟動 ---
+    // --- 9. 網站啟動 ---
     initializeData();
 });

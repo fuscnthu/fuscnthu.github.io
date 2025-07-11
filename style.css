@@ -1,5 +1,4 @@
 /* 基本樣式與莫蘭迪色系 */
-/* 基本樣式與莫蘭迪色系 */
 :root {
     --primary-color: #5C6770;
     --background-color: #E0F2F1; /* 淺藍綠色調 */
@@ -7,330 +6,277 @@
     --border-color: #D3D3CC;
     --accent-color: #C1AEB1;
     --hover-color: #B5B8B1;
+    
+    /* 半透明效果需要 RGB 值 */
+    --primary-color-rgb: 92, 103, 112;
+    --background-color-rgb: 224, 242, 241;
+    --card-background-rgb: 229, 229, 222;
+    --border-color-rgb: 211, 211, 204;
+    --accent-color-rgb: 193, 174, 177;
+    --hover-color-rgb: 181, 184, 177;
 }
 
 body {
     font-family: Arial, sans-serif;
-    background-color: var(--background-color); /* 使用新的背景色 */
+    background-color: var(--background-color);
     color: var(--primary-color);
     margin: 0;
     padding: 0;
+    line-height: 1.6;
 }
-
-/* 確保您之前設定的其餘樣式也存在，特別是關於 .main-layout, .sidebar, .file-tree, .right-panel-viewer 等佈局相關的樣式 */
-/* 如果您沒有之前的 style.css 內容，請參考我先前提供的完整版本 */
 
 /* 網頁標頭 */
 header {
-    background-color: var(--card-background);
+    background-color: rgba(var(--card-background-rgb), 0.8); /* 半透明 */
+    backdrop-filter: blur(5px); /* 毛玻璃效果 */
     text-align: center;
-    padding: 3rem 1rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 2rem 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-bottom-left-radius: 15px; /* 圓角 */
+    border-bottom-right-radius: 15px; /* 圓角 */
+    margin-bottom: 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-/* 容器與網格 */
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 容器與主要佈局 */
 .container {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
 }
 
-.items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-}
-
-.item-card {
-    background-color: var(--card-background);
-    border-radius: 8px;
-    overflow: hidden;
+.controls-section {
+    background-color: rgba(var(--card-background-rgb), 0.8); /* 半透明 */
+    backdrop-filter: blur(5px);
+    padding: 1.5rem;
+    border-radius: 15px; /* 圓角 */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
+    margin-bottom: 2rem;
 }
 
-.item-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+.search-bar {
+    margin-bottom: 1rem;
 }
 
-/* ... (其他樣式不變) ... */
-
-/* 資料卡片內圖片的容器，用於控制圖片大小 */
-.item-card-image-container {
+#searchInput {
     width: 100%;
-    height: 180px; /* 固定高度，讓卡片高度一致 */
-    overflow: hidden; /* 隱藏超出部分 */
-    display: flex; /* 使用 flexbox 讓圖片居中 */
-    align-items: center;
-    justify-content: center;
-    background-color: var(--border-color); /* 圖片載入前的背景色 */
-}
-
-.item-card-image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* 圖片會被裁剪以填充容器，保持比例 */
-    display: block;
-}
-
-/* 檔案圖示的樣式 (如果圖片無法顯示，會顯示這個) */
-.item-card .icon-placeholder {
-    font-size: 3em;
-    text-align: center;
-    padding: 1rem 0;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box; /* 確保 padding 不增加寬度 */
+    background-color: rgba(255, 255, 255, 0.5); /* 半透明輸入框 */
     color: var(--primary-color);
 }
 
-/* 浮動視窗中，Word 檔案的下載連結樣式 */
-.modal-content-body .download-link {
-    display: block;
-    text-align: center;
-    margin-top: 1rem;
-    padding: 0.8rem 1.5rem;
-    background-color: var(--accent-color);
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.2s;
+#searchInput::placeholder {
+    color: rgba(var(--primary-color-rgb), 0.7);
 }
 
-.modal-content-body .download-link:hover {
-    background-color: #A09497; /* 莫蘭迪粉的深一點版本 */
-}
-
-/* 標籤樣式 */
 .tags-container {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 1rem;
 }
 
 .tag {
-    background-color: var(--hover-color);
+    background-color: var(--accent-color);
     color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.1s;
 }
 
 .tag:hover {
-    background-color: var(--accent-color);
+    background-color: var(--hover-color);
+    transform: translateY(-1px);
 }
 
-/* ... (existing tag styles) ... */
-
-/* 選取 tag 的樣式 */
 .tag.active {
-    background-color: var(--accent-color); /* 莫蘭迪粉 */
-    color: white;
-    font-weight: bold;
-    order: -1; /* 讓選中的 tag 往前排，需要父容器是 flex */
+    background-color: var(--primary-color);
 }
 
-/* 確保 tags-container 是 flex 容器 */
-.tags-container {
+hr {
+    border: none;
+    border-top: 1px solid rgba(var(--border-color-rgb), 0.5);
+    margin: 2rem 0;
+}
+
+.main-layout {
+    display: flex;
+    gap: 2rem;
+}
+
+.sidebar {
+    flex: 0 0 300px; /* 固定寬度 */
+    background-color: rgba(var(--card-background-rgb), 0.8); /* 半透明 */
+    backdrop-filter: blur(5px);
+    padding: 1.5rem;
+    border-radius: 15px; /* 圓角 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 1.25rem;
+    border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#loading-message {
+    text-align: center;
+    color: var(--primary-color);
+    padding: 1rem 0;
+}
+
+/* 檔案路徑導覽 (麵包屑) */
+.file-tree-path {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    align-items: center; /* 垂直居中 */
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5);
 }
 
-/* 浮動視窗 (Modal) 樣式 */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(5px);
-}
-.modal-content {
-    background-color: var(--background-color);
-    margin: 5% auto;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    max-width: 800px;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+.path-segment {
+    background-color: transparent;
+    border: none;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 5px;
+    transition: background-color 0.2s, color 0.2s;
 }
 
-/* 響應式設計 */
-@media (max-width: 768px) {
-    .items-grid {
-        grid-template-columns: 1fr;
-    }
+.path-segment:hover {
+    background-color: rgba(var(--accent-color-rgb), 0.2);
+    color: var(--accent-color);
 }
 
-/* ... (其他樣式不變) ... */
-
-/* 載入訊息樣式 */
-#loading-message {
-    font-size: 1.2rem;
-    padding: 2rem;
+.path-separator {
+    color: rgba(var(--primary-color-rgb), 0.7);
+    margin: 0 0.2rem;
+    font-size: 0.95rem;
 }
 
-/* Modal 內容中的文件預覽區塊 */
-.modal-content-body {
-    margin-top: 1rem;
-    background-color: var(--background-color);
-    padding: 1rem;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    max-height: 70vh; /* 限制高度 */
+/* 檔案列表 */
+.file-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* 讓列表填充剩餘空間 */
     overflow-y: auto; /* 允許滾動 */
 }
 
-.modal-content-body img {
-    max-width: 100%;
-    height: auto;
-    display: block; /* 移除圖片底部多餘空間 */
-    margin: 0 auto;
+.file-list-item {
+    margin-bottom: 0.5rem;
 }
 
-.modal-content-body iframe {
-    width: 100%;
-    height: 60vh; /* 設定 PDF 預覽框的高度 */
-    border: none;
-}
-
-/* Markdown 預覽的基本樣式 */
-.modal-content-body .markdown-body h1,
-.modal-content-body .markdown-body h2,
-.modal-content-body .markdown-body h3 {
-    color: var(--primary-color);
-    margin-top: 1em;
-    margin-bottom: 0.5em;
-}
-
-.modal-content-body .markdown-body p {
-    line-height: 1.6;
-    margin-bottom: 1em;
-}
-
-.modal-content-body .markdown-body pre {
-    background-color: #eee;
-    padding: 1em;
-    overflow-x: auto;
-    border-radius: 4px;
-}
-
-
-/* 主佈局容器 */
-.main-layout {
-    display: flex;
-    min-height: calc(100vh - 10rem); /* 視窗高度減去 header 高度 */
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    gap: 1rem;
-}
-
-/* 左側邊欄 */
-.sidebar {
-    flex: 0 0 300px; /* 固定寬度 */
-    background-color: var(--card-background);
+.folder-item, .file-item {
+    background-color: rgba(var(--background-color-rgb), 0.5); /* 半透明列表項 */
+    padding: 0.7rem 1rem;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    padding: 1rem;
-    overflow-y: auto; /* 允許內部滾動 */
-    position: sticky; /* 粘性定位，使其在滾動時固定 */
-    top: 2rem; /* 與頂部 main-layout 的 margin 對齊 */
-    height: fit-content; /* 高度適應內容 */
-    max-height: calc(100vh - 4rem); /* 限制最大高度 */
-}
-
-/* 檔案樹樣式 */
-.file-tree ul {
-    list-style: none;
-    padding-left: 15px; /* 子項目縮排 */
-}
-
-.file-tree li {
-    margin: 0.2rem 0;
-}
-
-.file-tree .folder, .file-tree .file {
     cursor: pointer;
-    padding: 0.3rem 0.5rem;
-    border-radius: 4px;
-    transition: background-color 0.2s;
     display: flex;
     align-items: center;
+    gap: 0.8rem;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-.file-tree .folder:hover, .file-tree .file:hover, .file-tree .file.active {
-    background-color: var(--hover-color);
+.folder-item:hover, .file-item:hover {
+    background-color: rgba(var(--accent-color-rgb), 0.3);
+    transform: translateX(3px);
+}
+
+.file-item.active {
+    background-color: var(--accent-color);
     color: white;
 }
-
-.file-tree .folder-icon {
-    margin-right: 5px;
+.file-item.active .icon {
+    filter: invert(100%); /* 反轉圖標顏色 */
 }
 
-/* 右側內容顯示區 (預留給未來可能的全屏顯示) */
+.icon {
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+
+/* 內容顯示區 */
 .content-display-area {
-    flex-grow: 1; /* 佔據剩餘空間 */
-    background-color: var(--card-background);
-    border-radius: 8px;
+    flex-grow: 1;
+    background-color: rgba(var(--card-background-rgb), 0.8); /* 半透明 */
+    backdrop-filter: blur(5px);
+    padding: 1.5rem;
+    border-radius: 15px; /* 圓角 */
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    padding: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--primary-color);
-    min-height: 500px; /* 最小高度 */
+    text-align: center;
 }
 
 .placeholder-message {
-    text-align: center;
-    font-size: 1.2em;
-    color: var(--primary-color);
+    color: rgba(var(--primary-color-rgb), 0.7);
+    font-size: 1.1rem;
 }
 
-
-/* 浮動檢視器 (取代原來的 modal) */
+/* 右側檢視器面板 */
 .right-panel-viewer {
-    display: none; /* 預設隱藏 */
     position: fixed;
     top: 0;
     right: 0;
-    width: 60%; /* 右半邊螢幕 */
-    height: 100vh;
-    background-color: var(--background-color);
-    box-shadow: -5px 0 15px rgba(0,0,0,0.2);
-    z-index: 100;
+    width: 100%;
+    max-width: 600px; /* 檢視器最大寬度 */
+    height: 100%;
+    background-color: rgba(var(--card-background-rgb), 0.9); /* 半透明 */
+    backdrop-filter: blur(10px); /* 讓背景模糊 */
+    box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+    transform: translateX(100%); /* 預設隱藏在右側 */
+    transition: transform 0.3s ease-out;
+    display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    border-left: 1px solid var(--border-color); /* 添加邊框作為分割線 */
+    z-index: 2000; /* 確保在其他內容之上 */
+    border-top-left-radius: 15px; /* 圓角 */
+    border-bottom-left-radius: 15px; /* 圓角 */
 }
 
 .right-panel-viewer.active {
-    display: flex; /* 顯示時使用 flex 佈局 */
+    transform: translateX(0); /* 顯示檢視器 */
 }
 
 .viewer-header {
+    background-color: rgba(var(--accent-color-rgb), 0.6); /* 半透明 */
+    padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    background-color: var(--card-background);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5);
+    border-top-left-radius: 15px; /* 圓角 */
 }
 
 .viewer-header h3 {
     margin: 0;
-    color: var(--primary-color);
+    color: white;
+    font-size: 1.2rem;
+    flex-grow: 1;
+    text-align: left;
 }
 
 .viewer-actions {
@@ -340,23 +286,24 @@ header {
 }
 
 .viewer-actions button, .viewer-actions .new-tab-button {
-    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.2); /* 半透明按鈕背景 */
     border: none;
     border-radius: 5px;
+    padding: 0.5rem 0.8rem;
     cursor: pointer;
-    background-color: var(--hover-color);
+    font-size: 0.9rem;
     color: white;
     text-decoration: none;
     transition: background-color 0.2s;
 }
 
 .viewer-actions button:hover, .viewer-actions .new-tab-button:hover {
-    background-color: var(--accent-color);
+    background-color: rgba(255, 255, 255, 0.4);
 }
 
 .viewer-actions .close-button {
     background-color: transparent;
-    color: var(--primary-color);
+    color: white; /* 關閉按鈕文字顏色 */
     font-size: 1.5em;
     padding: 0 0.5rem;
 }
@@ -368,9 +315,9 @@ header {
 
 .viewer-content {
     flex-grow: 1;
-    padding: 1rem;
+    padding: 1.5rem;
     overflow-y: auto;
-    background-color: var(--background-color);
+    background-color: rgba(var(--background-color-rgb), 0.4); /* 半透明內容區背景 */
 }
 
 /* 內容中的圖片和 iframe */
@@ -379,15 +326,92 @@ header {
     height: auto;
     display: block;
     margin: 0 auto;
+    border-radius: 8px; /* 圖片圓角 */
 }
 
 .viewer-content iframe {
     width: 100%;
     height: 70vh; /* 調整高度以適應右側面板 */
-    border: none;
+    border: 1px solid var(--border-color); /* 增加邊框 */
+    border-radius: 8px; /* 圓角 */
 }
 
 /* Markdown 預覽的樣式 (與 modal 內容類似) */
+.markdown-body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 16px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    color: var(--primary-color); /* 使用主題顏色 */
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--primary-color); /* 使用主題顏色 */
+}
+.markdown-body h1 { font-size: 2em; border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5); padding-bottom: 0.3em; }
+.markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5); padding-bottom: 0.3em; }
+.markdown-body h3 { font-size: 1.25em; }
+
+.markdown-body p {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+.markdown-body ul, .markdown-body ol {
+    padding-left: 2em;
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+.markdown-body li {
+    margin-bottom: 0.5em;
+}
+.markdown-body code {
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 85%;
+    background-color: rgba(var(--card-background-rgb), 0.5); /* 淺色背景 */
+    border-radius: 6px;
+    padding: 0.2em 0.4em;
+}
+.markdown-body pre {
+    background-color: rgba(var(--primary-color-rgb), 0.1); /* 較深背景 */
+    padding: 1em;
+    overflow: auto;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+.markdown-body pre code {
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: 100%;
+}
+.markdown-body a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+.markdown-body a:hover {
+    text-decoration: underline;
+}
+
+/* 下載連結的樣式 */
+.download-link {
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-top: 1rem;
+    transition: background-color 0.2s;
+}
+
+.download-link:hover {
+    background-color: var(--hover-color);
+}
+
 
 /* 響應式設計：小螢幕下右側面板疊加顯示 */
 @media (max-width: 768px) {
@@ -398,26 +422,35 @@ header {
     }
 
     .sidebar {
-        flex: auto; /* 自動高度 */
-        position: static; /* 取消粘性定位 */
-        max-height: none; /* 取消最大高度限制 */
-        border-radius: 0;
-        box-shadow: none;
-        padding: 1rem 0.5rem;
+        flex: 1 1 auto; /* 允許側邊欄彈性伸展 */
+        width: auto; /* 重置固定寬度 */
+        margin-bottom: 1rem;
     }
-    
-    /* 隱藏內容顯示區，因為我們會用右側面板 */
+
     .content-display-area {
-        display: none;
+        height: 50vh; /* 在小螢幕上給予內容區一定高度 */
     }
 
     .right-panel-viewer {
-        width: 100%; /* 全螢幕寬度 */
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        border-left: none;
-        box-shadow: none;
+        width: 100%;
+        max-width: none;
+        top: auto;
+        bottom: 0;
+        height: 80%; /* 檢視器佔螢幕高度大部分 */
+        transform: translateY(100%);
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+    }
+
+    .right-panel-viewer.active {
+        transform: translateY(0);
+    }
+
+    .viewer-header {
+        border-bottom-left-radius: 0;
+        border-top-right-radius: 15px;
     }
 }

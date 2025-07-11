@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的資料集</title>
+    <title>好好的資料庫</title>
     <link rel="stylesheet" href="style.css">
     </head>
 <body>
 
     <header>
         <div class="header-content">
-            <h1>我的專案檔案</h1>
-            <p>探索與檢視我的儲存庫資料</p>
+            <h1>檔案小角落</h1>
         </div>
     </header>
 
     <main class="container">
-        <section class="controls-section">
+        <section id="controls-section" class="controls-section">
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="用關鍵字搜尋...">
             </div>
@@ -27,21 +26,25 @@
         <hr>
 
         <div class="main-layout">
-            <aside class="sidebar">
+            <aside id="sidebar" class="sidebar">
                 <h3>檔案瀏覽</h3>
                 <p id="loading-message" style="text-align: center; color: var(--primary-color);">載入中...</p>
-                <div id="file-tree" class="file-tree">
+                
+                <div id="file-tree-path" class="file-tree-path">
+                    <button id="home-button" class="path-segment">🏠 首頁</button>
+                </div>
+                <div id="file-list" class="file-list">
                     </div>
             </aside>
 
             <section id="content-display-area" class="content-display-area">
-                <p class="placeholder-message">請從左側選擇一個檔案來預覽。</p>
+                <p class="placeholder-message">尚未選取檔案捏</p>
             </section>
         </div>
     </main>
 
     <div id="right-panel-viewer" class="right-panel-viewer">
-        <div class="viewer-header">
+        <div id="viewer-header" class="viewer-header">
             <h3 id="viewer-title"></h3>
             <div class="viewer-actions">
                 <a id="viewer-new-tab-button" class="new-tab-button" href="#" target="_blank" title="在新分頁開啟">↗️</a>
