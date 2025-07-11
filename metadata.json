@@ -23,5 +23,14 @@
             "Word"
         ],
         "description": "關於 遊園.docx 的簡要說明。"
+    },
+    {
+        "path": "utils/cacheManager.js",
+        "type": "document",
+        "tags": [
+            "utils",
+            "文件"
+        ],
+        "description": "關於 cacheManager.js 的簡要說明。"
     }
 ]
