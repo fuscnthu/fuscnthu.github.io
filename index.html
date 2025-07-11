@@ -1,1 +1,45 @@
-Hello World
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的資料集</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/modal.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1>我的專案檔案</h1>
+            <p>探索與檢視我的儲存庫資料</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="controls-section">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="用關鍵字搜尋...">
+            </div>
+            <div id="tags-container" class="tags-container">
+                </div>
+        </section>
+
+        <hr>
+
+        <section id="items-grid" class="items-grid">
+            </section>
+    </main>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div class="modal-body">
+                <button id="pin-button" class="pin-button">★ 釘選</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
