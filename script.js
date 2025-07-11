@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- DOM 元素引用 ---
     const searchInput = document.getElementById('searchInput');
     const tagsContainer = document.getElementById('tags-container');
-    const fileTreeContainer = document.getElementById('file-tree');
+    const fileTreeContainer = document.getElementById('file-tree'); // 新增的檔案樹容器
     const loadingMessage = document.getElementById('loading-message');
     const rightPanelViewer = document.getElementById('right-panel-viewer');
     const viewerTitle = document.getElementById('viewer-title');
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const viewerPinButton = document.getElementById('viewer-pin-button');
     const viewerNewTabButton = document.getElementById('viewer-new-tab-button');
     const viewerCloseButton = document.getElementById('viewer-close-button');
-    const contentDisplayArea = document.getElementById('content-display-area');
+    const contentDisplayArea = document.getElementById('content-display-area'); // 新增的內容顯示區
 
     // --- 全域變數 ---
     let allItems = [];
@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const cacheManager = new CacheManager();
 
     // --- 1. 資料初始化與載入 (initializeData) ---
-    // ... (initializeData 函數內容保持不變，因為 metadata.json 已經由瀏覽器快取處理) ...
     async function initializeData() {
         loadingMessage.style.display = 'block';
 
@@ -61,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             loadingMessage.style.display = 'none';
             renderFileTree(fileTreeData);
             renderTags();
-            contentDisplayArea.style.display = 'flex';
+            contentDisplayArea.style.display = 'flex'; // 顯示內容顯示區
 
         } catch (error) {
             console.error('初始化資料失敗:', error);
@@ -72,7 +71,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     // --- 2. 檔案樹結構建構 (buildFileTree) ---
-    // ... (保持不變) ...
     function buildFileTree(items) {
         const tree = {};
 
@@ -95,7 +93,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --- 3. 檔案樹渲染 (renderFileTree) ---
-    // ... (保持不變) ...
     function renderFileTree(tree, parentElement = fileTreeContainer, currentPath = '') {
         if (parentElement === fileTreeContainer) {
             parentElement.innerHTML = '';
@@ -151,7 +148,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --- 4. 標籤渲染與排序 (renderTags, updateTagOrder) ---
-    // ... (保持不變) ...
     function renderTags() {
         const allTags = [...new Set(allItems.flatMap(item => item.tags))];
         tagsContainer.innerHTML = '';
@@ -195,7 +191,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --- 5. 搜尋與篩選邏輯 (applyFilters) ---
-    // ... (保持不變) ...
     function applyFilters() {
         const searchTerm = searchInput.value.toLowerCase();
         const activeTags = Array.from(document.querySelectorAll('.tag.active')).map(tag => tag.textContent);
@@ -220,7 +215,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     searchInput.addEventListener('input', applyFilters);
 
     // --- 6. 右側檢視器功能 (showViewer, hideViewer, togglePin, updatePinButtonState) ---
-    // **此函數將會大幅修改以使用 CacheManager**
     async function showViewer(item) {
         currentItem = item;
         viewerTitle.textContent = item.name;
@@ -285,17 +279,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         updatePinButtonState();
         viewerNewTabButton.href = item.download_url;
 
-        rightPanelViewer.classList.add('active');
-        contentDisplayArea.style.display = 'none';
+        rightPanelViewer.classList.add('active'); // 顯示右側檢視器
+        contentDisplayArea.style.display = 'none'; // 隱藏佔位內容區
     }
 
-    // ... (hideViewer, togglePin, updatePinButtonState 保持不變) ...
     function hideViewer() {
         rightPanelViewer.classList.remove('active');
         currentItem = null;
         viewerContent.innerHTML = '';
         document.querySelectorAll('.file.active').forEach(el => el.classList.remove('active'));
-        contentDisplayArea.style.display = 'flex';
+        contentDisplayArea.style.display = 'flex'; // 顯示佔位內容區
     }
 
     viewerCloseButton.addEventListener('click', hideViewer);
