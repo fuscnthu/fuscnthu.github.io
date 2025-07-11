@@ -19,10 +19,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const viewerCloseButton = document.getElementById('viewer-close-button');
     const contentDisplayArea = document.getElementById('content-display-area');
 
-    // 新增的 DOM 元素引用
     const fileTreePathContainer = document.getElementById('file-tree-path');
     const homeButton = document.getElementById('home-button');
-    const fileListContainer = document.getElementById('file-list'); // 原來的 fileTreeContainer 改名
+    const fileListContainer = document.getElementById('file-list');
+
+    // 新增的 DOM 元素引用
+    const pinnedItemsPanel = document.getElementById('pinned-items-panel');
+    const pinnedItemsList = document.getElementById('pinned-items-list');
+    const noPinnedItemsMessage = document.getElementById('no-pinned-items');
+
 
     // --- 全域變數 ---
     let allItems = []; // 包含所有檔案的原始列表
@@ -65,13 +70,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             fileTreeData = buildFileTree(allItems);
             
-            // 初始化時設定當前顯示的資料為根目錄
             navigateTo([]); // 導航到根目錄，這會觸發 renderCurrentLevel 和 renderBreadcrumbs
 
             loadingMessage.style.display = 'none';
             renderTags();
-            contentDisplayArea.style.display = 'flex';
             updatePinButtonState(); // 初始化時更新釘選按鈕狀態
+            renderPinnedItems(); // 初始化時渲染釘選面板
+
+            updateMainLayoutClass(); // 初始化時更新主佈局
 
         } catch (error) {
             console.error('初始化資料失敗:', error);
@@ -107,7 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderCurrentLevel(treeToRender) {
         fileListContainer.innerHTML = ''; // 清空現有列表
 
-        if (!treeToRender) {
+        if (!treeToRender || Object.keys(treeToRender).filter(key => key !== '_isFolder').length === 0) {
             fileListContainer.innerHTML = '<p>此資料夾沒有內容。</p>';
             return;
         }
@@ -188,6 +194,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- 5. 導航到指定路徑 ---
     function navigateTo(pathArray) {
+        currentItem = null; // 導航時清除當前選中的項目
+        hideViewer(); // 導航時關閉檢視器
+        
         currentPathParts = pathArray;
         let tempTree = fileTreeData;
 
@@ -206,7 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentDisplayTree = tempTree;
         renderCurrentLevel(currentDisplayTree); // 渲染當前層級內容
         renderBreadcrumbs(); // 更新麵包屑導覽
-        hideViewer(); // 導航後關閉檢視器
+        updateMainLayoutClass(); // 更新主佈局
     }
     
     // 首頁按鈕事件監聽器
@@ -284,8 +293,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (currentFilteredDisplayTree && currentFilteredDisplayTree[part]) {
                 currentFilteredDisplayTree = currentFilteredDisplayTree[part];
             } else {
-                // 如果篩選後的樹中沒有當前路徑，則顯示根目錄或空
-                currentFilteredDisplayTree = {}; // 顯示空內容
+                // 如果篩選後的樹中沒有當前路徑，則顯示空內容
+                currentFilteredDisplayTree = { _isFolder: true }; // 確保是個有效的空資料夾物件
                 break;
             }
         }
@@ -355,15 +364,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         viewerNewTabButton.href = item.download_url;
 
         rightPanelViewer.classList.add('active'); // 顯示右側檢視器
-        contentDisplayArea.style.display = 'none'; // 隱藏佔位內容區
+        updateMainLayoutClass(); // 更新主佈局（會導致 contentDisplayArea 隱藏）
     }
 
     function hideViewer() {
         rightPanelViewer.classList.remove('active');
-        currentItem = null;
+        currentItem = null; // 清除當前選中的項目
         viewerContent.innerHTML = '';
         document.querySelectorAll('.file-item.active').forEach(el => el.classList.remove('active'));
-        contentDisplayArea.style.display = 'flex'; // 顯示佔位內容區
+        updateMainLayoutClass(); // 更新主佈局（會導致 contentDisplayArea 顯示或 sidebar 擴展）
     }
 
     viewerCloseButton.addEventListener('click', hideViewer);
@@ -377,11 +386,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (isPinned) {
             pinnedItems = pinnedItems.filter(p => p.path !== currentItem.path);
         } else {
-            pinnedItems.push(currentItem);
+            // 檢查是否已存在，避免重複釘選
+            if (!isPinned) {
+                pinnedItems.push(currentItem);
+            }
         }
 
         localStorage.setItem('pinnedItems', JSON.stringify(pinnedItems));
         updatePinButtonState(); // 更新釘選按鈕顯示狀態
+        renderPinnedItems(); // 更新釘選面板
     }
 
     function updatePinButtonState() {
@@ -393,6 +406,75 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- 9. 網站啟動 ---
+    // --- 9. 釘選面板功能 ---
+    function renderPinnedItems() {
+        pinnedItemsList.innerHTML = ''; // 清空列表
+
+        if (pinnedItems.length === 0) {
+            noPinnedItemsMessage.style.display = 'block';
+            pinnedItemsPanel.classList.remove('has-items');
+            return;
+        }
+
+        noPinnedItemsMessage.style.display = 'none';
+        pinnedItemsPanel.classList.add('has-items');
+
+        pinnedItems.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'pinned-item';
+            const icon = item.type === 'image' ? '🖼️' : (item.name.toLowerCase().endsWith('.pdf') ? '📄' : (item.name.toLowerCase().endsWith('.docx') ? '📝' : '📜'));
+            li.innerHTML = `
+                <span class="pinned-item-info">
+                    <span class="icon">${icon}</span>
+                    <span class="name">${item.name}</span>
+                </span>
+                <button class="pinned-item-remove" data-path="${item.path}">&times;</button>
+            `;
+            
+            // 點擊項目打開檢視器
+            li.querySelector('.pinned-item-info').addEventListener('click', () => {
+                showViewer(item);
+            });
+
+            // 點擊移除按鈕
+            li.querySelector('.pinned-item-remove').addEventListener('click', (event) => {
+                event.stopPropagation(); // 防止觸發父元素的點擊事件
+                pinnedItems = pinnedItems.filter(p => p.path !== item.path);
+                localStorage.setItem('pinnedItems', JSON.stringify(pinnedItems));
+                renderPinnedItems(); // 重新渲染釘選面板
+                updatePinButtonState(); // 更新檢視器中的釘選按鈕狀態
+                // 如果當前在檢視器中顯示的正是被取消釘選的項目，則清除 currentItem 並更新佈局
+                if (currentItem && currentItem.path === item.path) {
+                    currentItem = null;
+                    updateMainLayoutClass();
+                }
+            });
+
+            pinnedItemsList.appendChild(li);
+        });
+    }
+
+
+    // --- 10. 主佈局更新邏輯 ---
+    function updateMainLayoutClass() {
+        if (currentItem === null) { // 沒有選中的檔案 (檢視器已關閉)
+            document.body.classList.add('sidebar-expanded');
+            contentDisplayArea.style.display = 'none'; // 隱藏佔位內容區
+        } else { // 有選中的檔案 (檢視器開啟或剛關閉)
+            document.body.classList.remove('sidebar-expanded');
+            if (rightPanelViewer.classList.contains('active')) {
+                // 如果檢視器開啟，隱藏佔位內容區
+                contentDisplayArea.style.display = 'none';
+                document.body.classList.add('viewer-active');
+            } else {
+                // 如果檢視器關閉但有項目曾被選中，顯示佔位內容區
+                contentDisplayArea.style.display = 'flex';
+                document.body.classList.remove('viewer-active');
+            }
+        }
+    }
+
+
+    // --- 11. 網站啟動 ---
     initializeData();
 });
