@@ -25,6 +25,14 @@
         "description": "關於 遊園.docx 的簡要說明。"
     },
     {
+        "path": "docs/遊園.md",
+        "type": "document",
+        "tags": [
+            "文件"
+        ],
+        "description": "關於 遊園.md 的簡要說明。"
+    },
+    {
         "path": "utils/cacheManager.js",
         "type": "document",
         "tags": [
