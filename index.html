@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的資料集</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="assets/css/modal.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
@@ -23,25 +22,39 @@
                 <input type="text" id="searchInput" placeholder="用關鍵字搜尋...">
             </div>
             <div id="tags-container" class="tags-container">
-                </div>
+            </div>
         </section>
 
         <hr>
 
-        <section id="items-grid" class="items-grid">
-            <p id="loading-message" style="text-align: center; color: var(--primary-color);">載入中...</p>
+        <div class="main-layout">
+            <aside class="sidebar">
+                <h3>檔案瀏覽</h3>
+                <p id="loading-message" style="text-align: center; color: var(--primary-color);">載入中...</p>
+                <div id="file-tree" class="file-tree">
+                    </div>
+            </aside>
+
+            <section id="content-display-area" class="content-display-area">
+                <p class="placeholder-message">請從左側選擇一個檔案來預覽。</p>
             </section>
+        </div>
     </main>
 
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <div class="modal-body">
-                <button id="pin-button" class="pin-button">★ 釘選</button>
+    <div id="right-panel-viewer" class="right-panel-viewer">
+        <div class="viewer-header">
+            <h3 id="viewer-title"></h3>
+            <div class="viewer-actions">
+                <a id="viewer-new-tab-button" class="new-tab-button" href="#" target="_blank" title="在新分頁開啟">↗️</a>
+                <button id="viewer-pin-button" title="釘選/取消釘選">★ 釘選</button>
+                <button id="viewer-close-button" class="close-button" title="關閉檢視器">&times;</button>
             </div>
         </div>
+        <div id="viewer-content" class="viewer-content">
+            </div>
     </div>
 
-    <script type="module" src="script.js"></script>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script type="module" src="script.js"></script>
 </html>
