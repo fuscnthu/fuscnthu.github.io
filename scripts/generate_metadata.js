@@ -1,8 +1,13 @@
 const fs = require('fs');
 const path = require('path'); // Node.js 內建的 path 模組
 
-const IGNORE_DIRS = ['.git', 'node_modules', '.github', 'scripts']; // 忽略這些資料夾
-const IGNORE_FILES = ['.DS_Store', 'metadata.json', 'README.md', 'LICENSE']; // 忽略這些檔案
+// ... (保留 script/generate_metadata.js 之前的程式碼) ...
+
+const IGNORE_DIRS = ['.git', 'node_modules', '.github', 'scripts'];
+// 將 css, js, json, html 文件名添加到忽略列表
+const IGNORE_FILES = ['.DS_Store', 'metadata.json', 'README.md', 'LICENSE', 'index.html', 'style.css', 'script.js', 'package.json', 'package-lock.json'];
+
+// ... (其他程式碼不變) ...
 
 const OUTPUT_FILE = 'metadata.json'; // 輸出檔案名稱
 const TARGET_DIR = '.'; // 要掃描的目標目錄 (這裡表示儲存庫根目錄)

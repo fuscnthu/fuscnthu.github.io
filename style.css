@@ -114,8 +114,27 @@ header {
     transition: background-color 0.2s;
 }
 
-.tag:hover, .tag.active {
+.tag:hover {
     background-color: var(--accent-color);
+}
+
+/* ... (existing tag styles) ... */
+
+/* 選取 tag 的樣式 */
+.tag.active {
+    background-color: var(--accent-color); /* 莫蘭迪粉 */
+    color: white;
+    font-weight: bold;
+    order: -1; /* 讓選中的 tag 往前排，需要父容器是 flex */
+}
+
+/* 確保 tags-container 是 flex 容器 */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    align-items: center; /* 垂直居中 */
 }
 
 /* 浮動視窗 (Modal) 樣式 */
@@ -200,4 +219,201 @@ header {
     padding: 1em;
     overflow-x: auto;
     border-radius: 4px;
+}
+
+
+/* 主佈局容器 */
+.main-layout {
+    display: flex;
+    min-height: calc(100vh - 10rem); /* 視窗高度減去 header 高度 */
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    gap: 1rem;
+}
+
+/* 左側邊欄 */
+.sidebar {
+    flex: 0 0 300px; /* 固定寬度 */
+    background-color: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 1rem;
+    overflow-y: auto; /* 允許內部滾動 */
+    position: sticky; /* 粘性定位，使其在滾動時固定 */
+    top: 2rem; /* 與頂部 main-layout 的 margin 對齊 */
+    height: fit-content; /* 高度適應內容 */
+    max-height: calc(100vh - 4rem); /* 限制最大高度 */
+}
+
+/* 檔案樹樣式 */
+.file-tree ul {
+    list-style: none;
+    padding-left: 15px; /* 子項目縮排 */
+}
+
+.file-tree li {
+    margin: 0.2rem 0;
+}
+
+.file-tree .folder, .file-tree .file {
+    cursor: pointer;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.file-tree .folder:hover, .file-tree .file:hover, .file-tree .file.active {
+    background-color: var(--hover-color);
+    color: white;
+}
+
+.file-tree .folder-icon {
+    margin-right: 5px;
+}
+
+/* 右側內容顯示區 (預留給未來可能的全屏顯示) */
+.content-display-area {
+    flex-grow: 1; /* 佔據剩餘空間 */
+    background-color: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    min-height: 500px; /* 最小高度 */
+}
+
+.placeholder-message {
+    text-align: center;
+    font-size: 1.2em;
+    color: var(--primary-color);
+}
+
+
+/* 浮動檢視器 (取代原來的 modal) */
+.right-panel-viewer {
+    display: none; /* 預設隱藏 */
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 60%; /* 右半邊螢幕 */
+    height: 100vh;
+    background-color: var(--background-color);
+    box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+    z-index: 100;
+    flex-direction: column;
+    overflow-y: auto;
+    border-left: 1px solid var(--border-color); /* 添加邊框作為分割線 */
+}
+
+.right-panel-viewer.active {
+    display: flex; /* 顯示時使用 flex 佈局 */
+}
+
+.viewer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--card-background);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.viewer-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+}
+
+.viewer-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.viewer-actions button, .viewer-actions .new-tab-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: var(--hover-color);
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.viewer-actions button:hover, .viewer-actions .new-tab-button:hover {
+    background-color: var(--accent-color);
+}
+
+.viewer-actions .close-button {
+    background-color: transparent;
+    color: var(--primary-color);
+    font-size: 1.5em;
+    padding: 0 0.5rem;
+}
+.viewer-actions .close-button:hover {
+    background-color: transparent;
+    color: red;
+}
+
+
+.viewer-content {
+    flex-grow: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    background-color: var(--background-color);
+}
+
+/* 內容中的圖片和 iframe */
+.viewer-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.viewer-content iframe {
+    width: 100%;
+    height: 70vh; /* 調整高度以適應右側面板 */
+    border: none;
+}
+
+/* Markdown 預覽的樣式 (與 modal 內容類似) */
+
+/* 響應式設計：小螢幕下右側面板疊加顯示 */
+@media (max-width: 768px) {
+    .main-layout {
+        flex-direction: column; /* 垂直堆疊 */
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar {
+        flex: auto; /* 自動高度 */
+        position: static; /* 取消粘性定位 */
+        max-height: none; /* 取消最大高度限制 */
+        border-radius: 0;
+        box-shadow: none;
+        padding: 1rem 0.5rem;
+    }
+    
+    /* 隱藏內容顯示區，因為我們會用右側面板 */
+    .content-display-area {
+        display: none;
+    }
+
+    .right-panel-viewer {
+        width: 100%; /* 全螢幕寬度 */
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        border-left: none;
+        box-shadow: none;
+    }
 }
