@@ -174,10 +174,10 @@ body.content-centered-80 .sidebar { /* 僅當 sidebar-expanded 同時存在時�
 /* 當 body 有 viewer-active-layout 類別時 (選取項目且檢視器開啟時)：
    整體容器向左移動並縮小，控制區和側邊欄在其內部左對齊並佔 80% 寬 */
 body.viewer-active-layout .container {
-    max-width: calc(1200px - 600px); /* 容器最大寬度為總寬減去檢視器寬度 */
+    max-width: calc(1200px - 600px - 1.5rem); /* 容器最大寬度為總寬減去檢視器寬度再減去間距 */
     margin-left: 0; /* 向左對齊 */
     margin-right: auto; /* 推到左邊 */
-    padding-right: 1rem; /* 增加右側內邊距，防止內容緊貼檢視器 */
+    padding-right: 0; /* 移除額外內邊距，間距已由 max-width 控制 */
 }
 
 body.viewer-active-layout .controls-section,
