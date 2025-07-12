@@ -494,8 +494,9 @@ body.viewer-active .content-display-area {
 /* 下載連結的樣式 */
 .download-link {
     text-align: center;
-    display: inline-block;
+    display: block;
     background-color: var(--accent-color);
+    width: fit-content; /* 讓連結寬度適應內容 */
     color: white;
     padding: 0.8rem 1.2rem;
     border-radius: 8px;
