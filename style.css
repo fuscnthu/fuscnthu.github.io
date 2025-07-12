@@ -493,6 +493,7 @@ body.viewer-active .content-display-area {
 
 /* 下載連結的樣式 */
 .download-link {
+    text-align: center;
     display: inline-block;
     background-color: var(--accent-color);
     color: white;
@@ -500,6 +501,8 @@ body.viewer-active .content-display-area {
     border-radius: 8px;
     text-decoration: none;
     margin-top: 1rem;
+    margin-left: auto;
+    margin-right: auto;
     transition: background-color 0.2s;
 }
 
