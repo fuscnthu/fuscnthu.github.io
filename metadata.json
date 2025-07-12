@@ -1,13 +1,5 @@
 [
     {
-        "path": "assets/images/1T8eOilZ7lfIw06DgTbL8w.png",
-        "type": "image",
-        "tags": [
-            "圖片"
-        ],
-        "description": "關於 1T8eOilZ7lfIw06DgTbL8w.png 的簡要說明。"
-    },
-    {
         "path": "utils/cacheManager.js",
         "type": "document",
         "tags": [
@@ -23,7 +15,7 @@
             "楊廣",
             "圖片"
         ],
-        "description": "關於 他本人.jpg 的簡要說明。"
+        "description": "作者：閻立本"
     },
     {
         "path": "原創角色/楊廣/古代設立繪.png",
@@ -32,52 +24,52 @@
             "楊廣",
             "圖片"
         ],
-        "description": "關於 古代設立繪.png 的簡要說明。"
+        "description": "作者：阿夕"
     },
     {
-        "path": "原創角色/楊廣/圖/1vxHfnTruwkLYnB4Tp7Fh1.png",
+        "path": "原創角色/楊廣/圖/乾卦.gif",
         "type": "image",
         "tags": [
             "圖",
             "圖片"
         ],
-        "description": "關於 1vxHfnTruwkLYnB4Tp7Fh1.png 的簡要說明。"
+        "description": "作者：阿恆 <br> 漁歌子 <br> 九五，飛龍在天。 <br> 遊邁雲來體自然，須搖高蹈大羅天。龍氣起，會明還，陽光愷悌照群巒。"
     },
     {
-        "path": "原創角色/楊廣/圖/2B19kHXdMW987xEdArXR0.gif",
+        "path": "原創角色/楊廣/圖/謙卦(地山謙).gif",
         "type": "image",
         "tags": [
             "圖",
             "圖片"
         ],
-        "description": "關於 2B19kHXdMW987xEdArXR0.gif 的簡要說明。"
+        "description": "作者：阿恆"
     },
     {
-        "path": "原創角色/楊廣/圖/2WfIhNBIJnBkiehfNbrcq7.gif",
+        "path": "原創角色/楊廣/圖/舉高高.gif",
         "type": "image",
         "tags": [
             "圖",
             "圖片"
         ],
-        "description": "關於 2WfIhNBIJnBkiehfNbrcq7.gif 的簡要說明。"
+        "description": "作者：阿恆"
     },
     {
-        "path": "原創角色/楊廣/圖/4h85EtuX2bze4jhYtjeCvC.gif",
+        "path": "原創角色/楊廣/圖/大畜卦(山天大畜).gif",
         "type": "image",
         "tags": [
             "圖",
             "圖片"
         ],
-        "description": "關於 4h85EtuX2bze4jhYtjeCvC.gif 的簡要說明。"
+        "description": "作者：阿恆"
     },
     {
-        "path": "原創角色/楊廣/圖/jHgNGk8cidOP5orUjrtEj.gif",
+        "path": "原創角色/楊廣/圖/同生共死.png",
         "type": "image",
         "tags": [
             "圖",
             "圖片"
         ],
-        "description": "關於 jHgNGk8cidOP5orUjrtEj.gif 的簡要說明。"
+        "description": "作者：阿夕"
     },
     {
         "path": "原創角色/楊廣/地獄趴設定.md",
@@ -95,7 +87,7 @@
             "楊廣",
             "圖片"
         ],
-        "description": "關於 現代設常服.png 的簡要說明。"
+        "description": "作者：小林"
     },
     {
         "path": "原創角色/楊廣/衣櫃/現代春裝.png",
@@ -104,7 +96,7 @@
             "衣櫃",
             "圖片"
         ],
-        "description": "關於 現代春裝.png 的簡要說明。"
+        "description": "作者：阿恆"
     },
     {
         "path": "原創角色/楊廣/隋苑飛螢.png",
@@ -113,6 +105,6 @@
             "楊廣",
             "圖片"
         ],
-        "description": "關於 隋苑飛螢.png 的簡要說明。"
+        "description": "作者：阿夕"
     }
 ]
