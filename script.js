@@ -310,55 +310,102 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function showViewer(item) {
         currentItem = item;
         viewerTitle.textContent = item.name;
-        viewerContent.innerHTML = '';
+        viewerContent.innerHTML = ''; // 清空之前的內容
 
-        let contentHTML = '';
-        const fileExtension = item.name.toLowerCase().split('.').pop();
+        let contentElement; // 用於存放最終要顯示的 DOM 元素
 
-        let cachedContent = cacheManager.get(item.path);
+        // 我們將不再直接緩存最終的 HTML 字符串，而是始終處理 Markdown 以正確應用 CSS 類別和移除 Frontmatter
+        // 對於非 Markdown 文件，可以直接緩存最終 HTML 字符串
 
-        if (cachedContent) {
-            contentHTML = cachedContent;
-        } else {
-            try {
-                if (item.type === 'document' && fileExtension !== 'pdf') { // 文檔類型，且不是 PDF
-                    const response = await fetch(item.download_url);
-                    if (!response.ok) throw new Error(`無法獲取內容: ${response.statusText}`);
-                    const rawContent = await response.text();
+        try {
+            if (item.type === 'document' && item.name.toLowerCase().endsWith('.md')) { // 處理 Markdown 文件
+                const response = await fetch(item.download_url);
+                if (!response.ok) throw new Error(`無法獲取內容: ${response.statusText}`);
+                let rawContent = await response.text();
 
-                    if (fileExtension === 'md') {
-                        contentHTML = `<div class="markdown-body">${marked.parse(rawContent)}</div>`;
-                    } else if (fileExtension === 'docx') {
-                        contentHTML = `
-                            <p style="text-align: center;">此為 Word 文件，無法直接預覽。</p>
-                            <a href="${item.download_url}" class="download-link" download="${item.name}">點此下載 ${item.name}</a>
-                        `;
-                    } else { // 其他不支援預覽的文檔類型
-                        contentHTML = `
-                            <p style="text-align: center;">檔案類型 ${fileExtension} 不支援直接預覽。</p>
-                            <a href="${item.download_url}" class="download-link" download="${item.name}">點此下載 ${item.name}</a>
-                        `;
+                let markdownContent = rawContent;
+                let cssClassesToAdd = [];
+
+                // Regex 查找 YAML Frontmatter
+                const frontmatterRegex = /^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/;
+                const match = rawContent.match(frontmatterRegex);
+
+                if (match) {
+                    const frontmatterString = match[1]; // Frontmatter 內容
+                    markdownContent = match[2].trim(); // 移除 Frontmatter 的 Markdown 內容
+
+                    // 解析 Frontmatter 中的 cssclasses
+                    const lines = frontmatterString.split('\n');
+                    for (const line of lines) {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine.startsWith('cssclasses:')) {
+                            const classesPart = trimmedLine.split('cssclasses:')[1].trim();
+                            if (classesPart.startsWith('-')) { // 列表格式: - class1, - class2
+                                // 修正後的正則表達式，用於匹配列表項
+                                const classListMatches = classesPart.matchAll(/-\s*([^\s-]+)/g); 
+                                for (const m of classListMatches) {
+                                    cssClassesToAdd.push(m[1]);
+                                }
+                            } else { // 單行格式: cssclasses: class1 class2
+                                cssClassesToAdd = classesPart.split(' ').map(c => c.trim()).filter(c => c.length > 0);
+                            }
+                            break; 
+                        }
                     }
-                    cacheManager.set(item.path, contentHTML);
-
-                } else if (item.type === 'image') {
-                    contentHTML = `<img src="${item.download_url}" alt="${item.name}">`;
-                } else if (fileExtension === 'pdf') {
-                    // --- 優化：PDF 使用 Google Docs Viewer 嵌入預覽 ---
-                    contentHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(item.download_url)}&embedded=true" frameborder="0"></iframe>`;
-                } else { 
-                    contentHTML = `<p>檔案類型 "${item.type}" 或副檔名無法預覽。</p>`;
-                    cacheManager.set(item.path, contentHTML);
                 }
+                
+                contentElement = document.createElement('div');
+                contentElement.classList.add('markdown-body');
+                cssClassesToAdd.forEach(cls => contentElement.classList.add(cls));
+                
+                contentElement.innerHTML = marked.parse(markdownContent); // 渲染移除 Frontmatter 的 Markdown
+                cacheManager.set(item.path, contentElement.outerHTML); // 緩存最終的 HTML 字符串
 
-            } catch (error) {
-                console.error('預覽內容載入失敗:', error);
-                contentHTML = `<p style="color: red;">載入預覽內容失敗：${error.message}。請確認 ${item.path} 存在。</p>`;
-                cacheManager.set(item.path, contentHTML, false);
+            } else if (item.type === 'document' && item.name.toLowerCase().endsWith('.docx')) {
+                contentElement = document.createElement('div');
+                contentElement.innerHTML = `
+                    <p style="text-align: center;">此為 Word 文件，無法直接預覽。</p>
+                    <a href="${item.download_url}" class="download-link" download="${item.name}">點此下載 ${item.name}</a>
+                `;
+                cacheManager.set(item.path, contentElement.outerHTML);
+
+            } else if (item.type === 'document' && item.name.toLowerCase().endsWith('.pdf')) {
+                contentElement = document.createElement('iframe');
+                contentElement.src = `https://docs.google.com/gview?url=${encodeURIComponent(item.download_url)}&embedded=true`;
+                contentElement.frameBorder = "0";
+                cacheManager.set(item.path, contentElement.outerHTML);
+
+            } else if (item.type === 'image') {
+                contentElement = document.createElement('img');
+                contentElement.src = item.download_url;
+                contentElement.alt = item.name;
+                cacheManager.set(item.path, contentElement.outerHTML);
+
+            } else if (item.type === 'document') { // 其他文檔類型 (非 md, docx, pdf)
+                contentElement = document.createElement('div');
+                contentElement.innerHTML = `
+                    <p style="text-align: center;">檔案類型 ${item.name.toLowerCase().split('.').pop()} 不支援直接預覽。</p>
+                    <a href="${item.download_url}" class="download-link" download="${item.name}">點此下載 ${item.name}</a>
+                `;
+                cacheManager.set(item.path, contentElement.outerHTML);
+
+            } else { // 無法預覽的類型
+                contentElement = document.createElement('p');
+                contentElement.textContent = `檔案類型 "${item.type}" 或副檔名無法預覽。`;
+                cacheManager.set(item.path, contentElement.outerHTML);
             }
+
+        } catch (error) {
+            console.error('預覽內容載入失敗:', error);
+            contentElement = document.createElement('p');
+            contentElement.style.color = 'red';
+            contentElement.textContent = `載入預覽內容失敗：${error.message}。請確認 ${item.path} 存在。`;
+            cacheManager.set(item.path, contentElement.outerHTML, false);
         }
         
-        viewerContent.innerHTML = contentHTML;
+        if (contentElement) {
+            viewerContent.appendChild(contentElement);
+        }
 
         updatePinButtonState(); // 更新釘選按鈕狀態
         viewerNewTabButton.href = item.download_url;
@@ -463,8 +510,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (currentItem === null) { // 沒有選中的檔案 (檢視器已關閉)
             document.body.classList.add('sidebar-expanded');
             document.body.classList.add('content-centered-80'); // 內容區（controls, sidebar）置中並佔80%寬
-            document.body.classList.remove('viewer-active-layout'); // 移除選中後的佈局類別
             contentDisplayArea.style.display = 'none'; // 隱藏佔位內容區
+            document.body.classList.remove('viewer-active-layout'); // 移除選中後的佈局類別
+            document.body.classList.remove('viewer-active');
         } else { // 有選中的檔案
             document.body.classList.remove('sidebar-expanded');
             document.body.classList.remove('content-centered-80'); // 移除置中類別
