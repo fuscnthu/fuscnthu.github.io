@@ -42,7 +42,7 @@
         "description": "關於 cacheManager.js 的簡要說明。"
     },
     {
-        "path": "圖/英仔/1vxHfnTruwkLYnB4Tp7Fh1.png",
+        "path": "角色/英仔/1vxHfnTruwkLYnB4Tp7Fh1.png",
         "type": "image",
         "tags": [
             "英仔",
@@ -51,7 +51,7 @@
         "description": "關於 1vxHfnTruwkLYnB4Tp7Fh1.png 的簡要說明。"
     },
     {
-        "path": "圖/英仔/2B19kHXdMW987xEdArXR0.gif",
+        "path": "角色/英仔/2B19kHXdMW987xEdArXR0.gif",
         "type": "image",
         "tags": [
             "英仔",
@@ -60,7 +60,7 @@
         "description": "關於 2B19kHXdMW987xEdArXR0.gif 的簡要說明。"
     },
     {
-        "path": "圖/英仔/2WfIhNBIJnBkiehfNbrcq7.gif",
+        "path": "角色/英仔/2WfIhNBIJnBkiehfNbrcq7.gif",
         "type": "image",
         "tags": [
             "英仔",
@@ -69,7 +69,16 @@
         "description": "關於 2WfIhNBIJnBkiehfNbrcq7.gif 的簡要說明。"
     },
     {
-        "path": "圖/英仔/4h85EtuX2bze4jhYtjeCvC.gif",
+        "path": "角色/英仔/2znCLwRGxElUmOc95ZwIhv.png",
+        "type": "image",
+        "tags": [
+            "英仔",
+            "圖片"
+        ],
+        "description": "關於 2znCLwRGxElUmOc95ZwIhv.png 的簡要說明。"
+    },
+    {
+        "path": "角色/英仔/4h85EtuX2bze4jhYtjeCvC.gif",
         "type": "image",
         "tags": [
             "英仔",
@@ -78,7 +87,16 @@
         "description": "關於 4h85EtuX2bze4jhYtjeCvC.gif 的簡要說明。"
     },
     {
-        "path": "圖/英仔/jHgNGk8cidOP5orUjrtEj.gif",
+        "path": "角色/英仔/Sui_Yangdi_Tang.jpg",
+        "type": "image",
+        "tags": [
+            "英仔",
+            "圖片"
+        ],
+        "description": "關於 Sui_Yangdi_Tang.jpg 的簡要說明。"
+    },
+    {
+        "path": "角色/英仔/jHgNGk8cidOP5orUjrtEj.gif",
         "type": "image",
         "tags": [
             "英仔",
