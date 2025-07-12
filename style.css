@@ -18,6 +18,11 @@
     /* 淺藍綠漸層色 */
     --light-blue-green-start: #C8E6C9; /* 淡綠色 */
     --light-blue-green-end: #B2DFDB; /* 淡藍色 */
+
+    --viewer-width: 600px; /* 定義檢視器的寬度變數*/
+    --container-gap: 2rem; /* 定義容器間距變數，與 main-layout 的 gap 一致 */
+    --left-margin: 20px; /* 黃框的x軸起始位置，也作為右側對稱間距 */
+    /* REMOVED: --container-max-width: 1200px; */ /* 已移除，寬度由 --left-margin 控制 */
 }
 
 body {
@@ -57,11 +62,13 @@ body.header-centered-80 .header-content {
 
 /* 容器與主要佈局 */
 .container {
-    max-width: 1200px; /* 預設最大寬度 */
-    margin: 0 auto 1rem auto; /* 縮小整體底部間距 */
+    /* 預設狀態 (檢視器未開啟) 時，容器的寬度為視窗寬度減去左右固定間距 */
+    max-width: 80%;
+    width: calc(100vw - (2 * var(--left-margin)));
+    margin: 0 auto 1rem auto; /* 縮小整體底部間距，並置中 */
     padding: 0 1rem;
     flex-grow: 1; /* 讓 main 區塊填充剩餘空間 */
-    transition: max-width 0.3s ease-out, margin 0.3s ease-out, padding 0.3s ease-out; /* 為過渡動畫新增屬性 */
+    transition: max-width 0.3s ease-out, margin 0.3s ease-out, padding 0.3s ease-out, width 0.3s ease-out; /* 為過渡動畫新增屬性 */
 }
 
 .controls-section {
@@ -130,13 +137,13 @@ hr {
 /* --- 主佈局：動態調整 --- */
 .main-layout {
     display: flex;
-    gap: 2rem;
+    gap: var(--container-gap); /* 使用變數 */
     transition: flex-direction 0.3s ease-out; /* 平滑過渡 */
 }
 
 /* 預設狀態 (檢視器關閉，有選中項目，或剛關閉) */
 .sidebar {
-    flex: 0 0 300px; /* 預設窄邊欄 */
+    flex-grow: 1; /* 允許側邊欄填充可用空間，使其與controls-section寬度一致 */
     background-color: rgba(var(--card-background-rgb), 0.8);
     backdrop-filter: blur(5px);
     padding: 1.5rem;
@@ -145,6 +152,7 @@ hr {
     display: flex;
     flex-direction: column;
     transition: flex 0.3s ease-out, width 0.3s ease-out, max-width 0.3s ease-out, margin 0.3s ease-out; /* 寬度過渡 */
+    width: 100%; /* 新增此行 */
 }
 
 /* 當 body 有 sidebar-expanded 類別時：檔案瀏覽區擴展 */
@@ -162,42 +170,43 @@ body.sidebar-expanded .content-display-area {
 }
 
 /* 當 body 有 content-centered-80 類別時 (沒有選取項目時)：
-   搜尋區、側邊欄置中並佔 80% 寬 */
+   搜尋區、側邊欄置中並佔據黃框寬度 (即 100% 的 .container，因為 .container 已經是黃框寬度) */
 body.content-centered-80 .controls-section,
 body.content-centered-80 .sidebar { /* 僅當 sidebar-expanded 同時存在時有效 */
-    max-width: 80%; /* 佔頁面8成 */
-    margin-left: auto;
+    max-width: 100%; /* Adjusted: now they fill the container which is the yellow box */
+    margin-left: auto; /* Still auto margin to keep them centered within their parent if they don't fill it */
     margin-right: auto;
 }
 
 
 /* 當 body 有 viewer-active-layout 類別時 (選取項目且檢視器開啟時)：
-   整體容器向左移動並縮小，控制區和側邊欄在其內部左對齊並佔 80% 寬 */
+   整體容器向左移動並縮小，控制區和側邊欄在其內部左對齊 */
 body.viewer-active-layout .container {
-    max-width: calc(1200px - 600px - 1.5rem); /* 容器最大寬度為總寬減去檢視器寬度再減去間距 */
-    margin-left: 0; /* 向左對齊 */
-    margin-right: auto; /* 推到左邊 */
-    padding-right: 0; /* 移除額外內邊距，間距已由 max-width 控制 */
+    /* 容器寬度為視口寬度減去檢視器寬度，並確保左側對齊 var(--left-margin)，同時在右側也留出相同的間距 */
+    width: calc(100vw - var(--viewer-width) - (2 * var(--left-margin))); /* Set exact width when viewer is active */
+    margin-left: var(--left-margin); /* 左側對齊黃框的 X 軸*/
+    margin-right: 0; /* 移除右側自動邊距，讓容器右側與檢視器之間留出 var(--left-margin) 的間距 */
+    padding-right: 0; /* 移除額外內邊距，避免擠壓內容 */
+    max-width: none; /* No max-width constraint here, as width is precisely calculated */
 }
 
 body.viewer-active-layout .controls-section,
 body.viewer-active-layout .sidebar {
-    max-width: 80%; /* 佔用其父容器（已調整寬度的 .container）的 80% 寬度 */
-    margin-left: 0; /* 強制向左對齊 */
-    margin-right: auto; /* 將右側空間留白 */
+    max-width: 100%; /* 在調整後的容器內佔滿*/
+    margin-left: 0; /* 強制向左對齊*/
+    margin-right: 0; /* 強制向右對齊*/
 }
 body.viewer-active-layout .main-layout {
     justify-content: flex-start; /* 將內容推向左邊 */
 }
 
 
-/* 當 body 有 viewer-active 類別時：檢視器開啟，側邊欄保持窄 */
+/* 當 body 有 viewer-active 類別時：檢視器開啟，側邊欄不再強制窄邊欄 */
 body.viewer-active .main-layout {
     flex-direction: row; /* 確保是水平佈局 */
 }
-body.viewer-active .sidebar {
-    flex: 0 0 300px; /* 確保窄邊欄 */
-}
+/* 移除強制側邊欄為 300px 的樣式，讓其保持彈性 */
+/* body.viewer-active .sidebar { flex: 0 0 300px; } */
 body.viewer-active .content-display-area {
     display: none; /* 檢視器開啟時，隱藏佔位內容區 */
 }
@@ -272,73 +281,56 @@ body.viewer-active .content-display-area {
     border-radius: 8px;
     cursor: pointer;
     display: flex;
-    align-items: flex-start; /* 圖標與文字頂部對齊 */
-    gap: 0.8rem;
+    align-items: flex-start; /* 讓內容從頂部對齊 */
+    gap: 0.7rem; /* 圖標與文字間距 */
     transition: background-color 0.2s, transform 0.1s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .folder-item:hover, .file-item:hover {
-    background-color: rgba(var(--accent-color-rgb), 0.3);
-    transform: translateX(3px);
+    background-color: rgba(var(--hover-color-rgb), 0.3); /* 輕微懸停效果 */
+    transform: translateY(-1px);
 }
 
 .file-item.active {
     background-color: var(--accent-color);
     color: white;
 }
-.file-item.active .icon {
-    filter: invert(100%); /* 反轉圖標顏色 */
-}
 
-.icon {
+.file-item .icon {
     font-size: 1.2em;
-    line-height: 1;
     flex-shrink: 0; /* 防止圖標縮小 */
-    margin-top: 0.1em; /* 輕微調整對齊 */
+    line-height: 1; /* 確保垂直居中 */
+     transition: filter 0.2s ease-out; /* 為濾鏡過渡添加動畫 */ 
 }
 
-.folder-item .name, .file-item .name { /* 目標名稱文本 */
-    white-space: normal; /* 允許換行 */
-    word-wrap: break-word; /* 長單字換行 */
-    overflow-wrap: break-word; /* 現代等效屬性 */
-    flex-grow: 1; /* 允許名稱填充可用空間 */
-    min-width: 0; /* 允許在 flex 項目中縮小 */
+.file-item.active .icon {
+     filter: invert(0%); /* 反轉圖標顏色 */ 
 }
 
-
-/* 內容顯示區 */
-.content-display-area {
-    flex-grow: 1;
-    background-color: rgba(var(--card-background-rgb), 0.8); /* 半透明 */
-    backdrop-filter: blur(5px);
-    padding: 1.5rem;
-    border-radius: 15px; /* 圓角 */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    display: flex; /* 預設為 flex 顯示 */
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    transition: display 0.3s ease-out; /* 平滑過渡 */
+.file-item .name, .folder-item .name {
+    flex-grow: 1; /* 讓名稱佔據剩餘空間 */
+    word-break: break-word; /* 長名稱換行 */
 }
 
 .placeholder-message {
+    text-align: center;
     color: rgba(var(--primary-color-rgb), 0.7);
-    font-size: 1.1rem;
+    font-style: italic;
+    padding: 2rem;
 }
 
-/* 右側檢視器面板 */
+
+/* 右側檢視器 */
 .right-panel-viewer {
     position: fixed;
-    top: 0;
-    right: 0;
-    width: 100%;
-    max-width: 600px; /* 檢視器最大寬度 */
-    height: 100%;
-    background-color: rgba(var(--card-background-rgb), 0.9); /* 半透明 */
-    backdrop-filter: blur(10px); /* 讓背景模糊 */
-    box-shadow: -4px 0 10px rgba(0,0,0,0.1);
-    transform: translateX(100%); /* 預設隱藏在右側 */
+    top: 20px; /* 與黃框上邊緣對齊 */
+    right: 0px; /* 與黃框右邊緣對齊 */
+    width: var(--viewer-width); /* 使用變數 */
+    height: calc(100vh - 40px); /* 距離視口上下各 20px */
+    background-color: rgba(var(--card-background-rgb), 0.8); /* 半透明 */
+    backdrop-filter: blur(8px);
+    box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+    transform: translateX(calc(100% + 20px)); /* 預設隱藏在右側，多加 20px 確保完全隱藏並留有間距 */
     transition: transform 0.3s ease-out;
     display: flex;
     flex-direction: column;
@@ -397,11 +389,11 @@ body.viewer-active .content-display-area {
     font-size: 1.5em;
     padding: 0 0.5rem;
 }
+
 .viewer-actions .close-button:hover {
     background-color: transparent;
     color: red;
 }
-
 
 .viewer-content {
     flex-grow: 1;
@@ -416,23 +408,21 @@ body.viewer-active .content-display-area {
     height: auto;
     display: block;
     margin: 0 auto;
-    border-radius: 8px; /* 圖片圓角 */
+    border-radius: 8px;
 }
 
 .viewer-content iframe {
     width: 100%;
-    height: 70vh; /* 調整高度以適應右側面板 */
-    border: 1px solid var(--border-color); /* 增加邊框 */
-    border-radius: 8px; /* 圓角 */
+    height: 100%;
+    border: none;
 }
 
-/* Markdown 預覽的樣式 (與 modal 內容類似) */
+/* markdown 樣式 */
 .markdown-body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 16px;
     line-height: 1.5;
     word-wrap: break-word;
-    color: var(--primary-color); /* 使用主題顏色 */
 }
 
 .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6 {
@@ -440,31 +430,43 @@ body.viewer-active .content-display-area {
     margin-bottom: 16px;
     font-weight: 600;
     line-height: 1.25;
-    color: var(--primary-color); /* 使用主題顏色 */
 }
-.markdown-body h1 { font-size: 2em; border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5); padding-bottom: 0.3em; }
-.markdown-body h2 { font-size: 1.5em; border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5); padding-bottom: 0.3em; }
-.markdown-body h3 { font-size: 1.25em; }
+
+.markdown-body h1 {
+    font-size: 2em;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+}
+
+.markdown-body h2 {
+    font-size: 1.5em;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.3em;
+}
 
 .markdown-body p {
     margin-top: 0;
     margin-bottom: 16px;
 }
+
 .markdown-body ul, .markdown-body ol {
-    padding-left: 2em;
     margin-top: 0;
     margin-bottom: 16px;
+    padding-left: 2em;
 }
-.markdown-body li {
-    margin-bottom: 0.5em;
+
+.markdown-body li + li {
+    margin-top: 0.25em;
 }
+
 .markdown-body code {
-    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    font-size: 85%;
-    background-color: rgba(var(--card-background-rgb), 0.5); /* 淺色背景 */
-    border-radius: 6px;
+    background-color: rgba(var(--primary-color-rgb), 0.1);
     padding: 0.2em 0.4em;
+    border-radius: 6px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 85%;
 }
+
 .markdown-body pre {
     background-color: rgba(var(--primary-color-rgb), 0.1); /* 較深背景 */
     padding: 1em;
@@ -472,16 +474,19 @@ body.viewer-active .content-display-area {
     border-radius: 6px;
     margin-bottom: 16px;
 }
+
 .markdown-body pre code {
     background-color: transparent;
     padding: 0;
     border-radius: 0;
     font-size: 100%;
 }
+
 .markdown-body a {
     color: var(--accent-color);
     text-decoration: none;
 }
+
 .markdown-body a:hover {
     text-decoration: underline;
 }
@@ -519,23 +524,23 @@ body.viewer-active .content-display-area {
     flex-direction: column;
     gap: 8px; /* 項目間距 */
     min-width: 150px;
-    max-width: 250px; /* 調整最大寬度以更好地容納換行文本 */
-    box-sizing: border-box; /* 確保 padding 不增加寬度 */
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    max-width: 250px; /* 調整最大寬度以適應內容 */
+    transform: translateX(-110%); /* 預設隱藏在左側 */
+    transition: transform 0.3s ease-out;
 }
-/* 當沒有項目時隱藏面板 */
-#pinned-items-panel:not(.has-items) {
-    transform: translateX(-100%); /* 隱藏到左邊 */
-    opacity: 0;
-    pointer-events: none; /* 禁止互動 */
+
+#pinned-items-panel.has-items {
+    transform: translateX(0); /* 有項目時顯示 */
 }
 
 #pinned-items-panel h3 {
-    margin: 0 0 10px 0;
-    color: var(--primary-color);
+    margin: 0;
     font-size: 1.1em;
+    color: var(--primary-color);
     border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5);
-    padding-bottom: 5px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    text-align: center;
 }
 
 #pinned-items-list {
@@ -546,73 +551,87 @@ body.viewer-active .content-display-area {
 
 .pinned-item {
     display: flex;
-    align-items: flex-start; /* 圖標與文字頂部對齊 */
+    align-items: center;
     justify-content: space-between;
-    background-color: rgba(var(--accent-color-rgb), 0.2); /* 較淺的背景 */
-    padding: 8px 10px;
-    border-radius: 10px;
+    background-color: rgba(var(--background-color-rgb), 0.5);
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    margin-bottom: 0.4rem;
     cursor: pointer;
     transition: background-color 0.2s;
-    color: var(--primary-color);
-    font-size: 0.9em;
 }
+
 .pinned-item:hover {
-    background-color: rgba(var(--accent-color-rgb), 0.4);
+    background-color: rgba(var(--hover-color-rgb), 0.3);
 }
 
 .pinned-item-info {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    gap: 0.5rem;
     flex-grow: 1;
-    overflow: hidden; /* 保持隱藏超出部分 */
 }
+
 .pinned-item-info .icon {
     font-size: 1.1em;
-    margin-right: 8px;
-    flex-shrink: 0; /* 防止縮小 */
-    margin-top: 0.1em; /* 輕微調整對齊 */
-}
-.pinned-item-info .name {
-    flex-grow: 1;
-    overflow: hidden;
-    white-space: normal; /* 允許換行 */
-    word-wrap: break-word; /* 長單字換行 */
-    overflow-wrap: break-word; /* 現代等效屬性 */
-    min-width: 0; /* 允許在 flex 項目中縮小 */
+    flex-shrink: 0;
 }
 
+.pinned-item-info .name {
+    font-size: 0.9em;
+    word-break: break-all;
+}
 
 .pinned-item-remove {
-    background: none;
+    background-color: transparent;
     border: none;
-    color: rgba(var(--primary-color-rgb), 0.7);
-    font-size: 1.3em;
+    color: var(--primary-color);
+    font-size: 1.2em;
     cursor: pointer;
-    margin-left: 10px;
-    padding: 0 5px;
+    margin-left: 0.5rem;
+    padding: 0;
+    line-height: 1;
     transition: color 0.2s;
-    flex-shrink: 0; /* 防止縮小 */
 }
+
 .pinned-item-remove:hover {
     color: red;
 }
 
 
-/* 響應式設計：小螢幕下右側面板疊加顯示 */
+/* --- RWD 調整 --- */
+
 @media (max-width: 768px) {
-    .main-layout {
-        flex-direction: column; /* 垂直堆疊 */
-        padding: 0;
-        margin: 0;
+    :root {
+        --left-margin: 10px; /* 小螢幕邊距縮小 */
     }
 
-    /* 側邊欄在小螢幕下永遠全寬 */
-    .sidebar {
-        flex: 1 1 auto;
-        width: auto;
-        margin-bottom: 1rem;
+    /* 容器在小螢幕上佔滿寬度，不再限制 80% */
+    .container {
+        max-width: 95%; /* 使用更大的比例 */
+        width: 100%; /* 強制為 100% */
+        padding: 0 0.5rem; /* 縮小左右內邊距 */
     }
-    /* 小螢幕下，不使用 sidebar-expanded 類別控制寬度，因為已經是全寬 */
+
+    .header-content {
+        max-width: 95%; /* 標題也佔用更多空間 */
+        padding: 0.8rem 1rem;
+    }
+
+    /* 搜尋區塊在小螢幕上可以佔滿寬度，不再限制 80% */
+    .controls-section {
+        max-width: 95%; /* 現在是全寬容器的 95% */
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* 主佈局變為垂直堆疊 */
+    .main-layout {
+        flex-direction: column;
+        gap: 1rem; /* 縮小垂直間距 */
+    }
+
+    /* 側邊欄在小螢幕下，不使用 sidebar-expanded 類別控制寬度，因為已經是全寬 */
     body.sidebar-expanded .sidebar {
         width: auto;
         max-width: none;
@@ -622,6 +641,11 @@ body.viewer-active .content-display-area {
     }
 
     /* 小螢幕下 content-centered-80 效果調整 */
+    .container {
+        width: 100%; /* 在小螢幕上，容器佔滿寬度 */
+        margin: 0 auto 1rem auto; /* 保持置中 */
+        padding: 0 1rem; /* 保持內邊距 */
+    }
     body.content-centered-80 .header-content,
     body.content-centered-80 .controls-section,
     body.content-centered-80 .sidebar {
@@ -657,9 +681,11 @@ body.viewer-active .content-display-area {
         transform: translateY(100%);
         border-top-left-radius: 15px;
         border-top-right-radius: 15px;
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-        box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+        border-bottom-left-radius: 0; /* 移除底部左圓角 */
+        border-bottom-right-radius: 0; /* 移除底部右圓角 */
+        right: 0; /* 確保在底部時靠右對齊 */
+        left: 0; /* 確保在底部時靠左對齊 */
+        margin: auto; /* 確保置中 */
     }
 
     .right-panel-viewer.active {
@@ -671,12 +697,12 @@ body.viewer-active .content-display-area {
         border-top-right-radius: 15px;
     }
 
-    /* 小螢幕下釘選面板位置調整 */
     #pinned-items-panel {
-        top: 10px;
+        top: auto;
+        bottom: 20px; /* 釘選面板在小螢幕上移動到底部 */
         left: 10px;
-        max-height: 50vh; /* 小螢幕下限制高度 */
-        min-width: 100px;
-        max-width: 180px; /* 小螢幕下釘選面板也適當調整 */
+        max-height: 40vh; /* 調整最大高度 */
+        width: calc(100% - 20px); /* 佔滿寬度 */
+        max-width: none;
     }
 }
