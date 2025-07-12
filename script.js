@@ -1,7 +1,8 @@
+// script.js
 import { CacheManager } from './utils/cacheManager.js'; // 請確保路徑正確
 
 document.addEventListener('DOMContentLoaded', async () => {
-    
+
     // --- 網站設定常數 ---
     const GITHUB_USERNAME = 'fuscnthu'; // GitHub 使用者名稱
     const REPO_NAME = 'fuscnthu.github.io'; // 儲存庫名稱
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadingMessage.style.display = 'block';
 
         const metadataUrl = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/${METADATA_FILE}`;
-        
+
         try {
             const response = await fetch(metadataUrl);
             if (!response.ok) {
@@ -69,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             allItems = allItems.filter(item => !item.path.startsWith('utils/'));
 
             fileTreeData = buildFileTree(allItems);
-            
+
             navigateTo([]); // 導航到根目錄，這會觸發 renderCurrentLevel 和 renderBreadcrumbs
 
             loadingMessage.style.display = 'none';
@@ -175,7 +176,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let currentPath = '';
         currentPathParts.forEach((part, index) => {
             currentPath += (currentPath ? '/' : '') + part;
-            
+
             const separator = document.createElement('span');
             separator.className = 'path-separator';
             separator.textContent = ' / ';
@@ -196,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function navigateTo(pathArray) {
         currentItem = null; // 導航時清除當前選中的項目
         hideViewer(); // 導航時關閉檢視器
-        
+
         currentPathParts = pathArray;
         let tempTree = fileTreeData;
 
@@ -217,7 +218,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderBreadcrumbs(); // 更新麵包屑導覽
         updateMainLayoutClass(); // 更新主佈局
     }
-    
+
     // 首頁按鈕事件監聽器
     homeButton.addEventListener('click', () => navigateTo([]));
 
@@ -276,15 +277,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 首先過濾掉 utils 項目
             if (item.path.startsWith('utils/')) return false;
 
-            const matchesSearch = item.name.toLowerCase().includes(searchTerm) || 
+            const matchesSearch = item.name.toLowerCase().includes(searchTerm) ||
                                   item.description.toLowerCase().includes(searchTerm) ||
                                   item.tags.some(tag => tag.toLowerCase().includes(searchTerm));
-            
+
             const matchesTags = activeTags.length === 0 || activeTags.every(tag => item.tags.includes(tag));
-            
+
             return matchesSearch && matchesTags;
         });
-        
+
         const filteredTree = buildFileTree(filteredItems); // 重新建立篩選後的樹
 
         // 根據當前路徑找到在篩選後樹中的對應節點
@@ -342,22 +343,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                             const classesPart = trimmedLine.split('cssclasses:')[1].trim();
                             if (classesPart.startsWith('-')) { // 列表格式: - class1, - class2
                                 // 修正後的正則表達式，用於匹配列表項
-                                const classListMatches = classesPart.matchAll(/-\s*([^\s-]+)/g); 
+                                const classListMatches = classesPart.matchAll(/-\s*([^\s-]+)/g);
                                 for (const m of classListMatches) {
                                     cssClassesToAdd.push(m[1]);
                                 }
                             } else { // 單行格式: cssclasses: class1 class2
                                 cssClassesToAdd = classesPart.split(' ').map(c => c.trim()).filter(c => c.length > 0);
                             }
-                            break; 
+                            break;
                         }
                     }
                 }
-                
+
                 contentElement = document.createElement('div');
                 contentElement.classList.add('markdown-body');
                 cssClassesToAdd.forEach(cls => contentElement.classList.add(cls));
-                
+
                 contentElement.innerHTML = marked.parse(markdownContent); // 渲染移除 Frontmatter 的 Markdown
                 cacheManager.set(item.path, contentElement.outerHTML); // 緩存最終的 HTML 字符串
 
@@ -379,6 +380,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 contentElement = document.createElement('img');
                 contentElement.src = item.download_url;
                 contentElement.alt = item.name;
+
+                // 檢查是否有描述並顯示
+                if (item.description && item.description !== `沒有描述 - ${item.path}`) {
+                    const descriptionElement = document.createElement('div');
+                    descriptionElement.className = 'image-description'; // 添加一個 class 以便樣式化
+                    descriptionElement.textContent = item.description;
+                    viewerContent.appendChild(contentElement); // 先添加圖片
+                    viewerContent.appendChild(descriptionElement); // 再添加描述
+                    cacheManager.set(item.path, viewerContent.innerHTML); // 緩存整個內容
+                    updatePinButtonState();
+                    viewerNewTabButton.href = item.download_url;
+                    rightPanelViewer.classList.add('active');
+                    updateMainLayoutClass();
+                    return; // 提前返回，因為已經手動添加了 contentElement
+                }
                 cacheManager.set(item.path, contentElement.outerHTML);
 
             } else if (item.type === 'document') { // 其他文檔類型 (非 md, docx, pdf)
@@ -402,7 +418,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             contentElement.textContent = `載入預覽內容失敗：${error.message}。請確認 ${item.path} 存在。`;
             cacheManager.set(item.path, contentElement.outerHTML, false);
         }
-        
+
         if (contentElement) {
             viewerContent.appendChild(contentElement);
         }
@@ -477,7 +493,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </span>
                 <button class="pinned-item-remove" data-path="${item.path}">&times;</button>
             `;
-            
+
             // 點擊項目打開檢視器
             li.querySelector('.pinned-item-info').addEventListener('click', () => {
                 showViewer(item);
@@ -505,7 +521,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- 10. 主佈局更新邏輯 ---
     function updateMainLayoutClass() {
         // 標題欄始終置中且寬度為 80%
-        document.body.classList.add('header-centered-80'); 
+        document.body.classList.add('header-centered-80');
 
         if (currentItem === null) { // 沒有選中的檔案 (檢視器已關閉)
             document.body.classList.add('sidebar-expanded');
