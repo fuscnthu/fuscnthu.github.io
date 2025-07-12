@@ -416,8 +416,6 @@ body.viewer-active .content-display-area {
     border: none;
 }
 
-/* style.css (新增在文件任何位置) */
-
 .viewer-content .image-description {
     text-align: center;
     margin-top: 15px;
@@ -427,6 +425,7 @@ body.viewer-active .content-display-area {
     background-color: rgba(var(--card-background-rgb), 0.6);
     border-radius: 8px;
     line-height: 1.4;
+    white-space: pre-wrap; /* 新增這行 */
 }
 
 
