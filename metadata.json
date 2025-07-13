@@ -70,6 +70,25 @@
         "description": "作者：阿恆"
     },
     {
+        "path": "原創角色/楊廣/圖/隋苑飛螢.png",
+        "type": "image",
+        "tags": [
+            "楊廣",
+            "圖片",
+            "插圖"
+        ],
+        "description": "作者：阿夕"
+    },
+    {
+        "path": "原創角色/楊廣/楊廣設定.md",
+        "type": "document",
+        "tags": [
+            "楊廣",
+            "設定"
+        ],
+        "description": "希望英仔不要讓我遭天譴"
+    },
+    {
         "path": "原創角色/楊廣/現代設常服.png",
         "type": "image",
         "tags": [
@@ -89,24 +108,5 @@
             "圖片"
         ],
         "description": "作者：阿恆"
-    },
-    {
-        "path": "原創角色/楊廣/圖/隋苑飛螢.png",
-        "type": "image",
-        "tags": [
-            "楊廣",
-            "圖片",
-            "插圖"
-        ],
-        "description": "作者：阿夕"
-    },
-        {
-        "path": "原創角色/楊廣/楊廣設定.md",
-        "type": "document",
-        "tags": [
-            "楊廣",
-            "設定"
-        ],
-        "description": "希望英仔不要讓我遭天譴"
     }
 ]
