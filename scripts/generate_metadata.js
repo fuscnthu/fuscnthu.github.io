@@ -52,36 +52,50 @@ function collectFiles(currentPath) {
                     type = 'image';
                 }
 
-                let tags = [];
+                // --- Start: 自動生成標籤邏輯 ---
+                let generatedTags = []; // 儲存腳本自動生成的標籤
                 const pathParts = relativePath.split('/');
                 if (pathParts.length > 1) {
                     const folderTag = pathParts[pathParts.length - 2];
                     if (folderTag && !['assets', 'docs', 'images', 'test-folder'].includes(folderTag.toLowerCase())) {
-                        tags.push(folderTag);
+                        generatedTags.push(folderTag);
                     }
                 }
-                if (fileName.toLowerCase().includes('report')) tags.push('報告');
-                if (fileName.toLowerCase().includes('plan')) tags.push('規劃');
-                if (fileName.toLowerCase().includes('design')) tags.push('設計');
-                if (fileName.toLowerCase().includes('overview') || fileName.toLowerCase().includes('summary')) tags.push('概述');
-                if (fileName.toLowerCase().includes('image') || type === 'image') tags.push('圖片');
-                if (fileName.toLowerCase().includes('document') || type === 'document') tags.push('文件');
-                if (fileName.toLowerCase().endsWith('.docx')) tags.push('Word');
+                if (fileName.toLowerCase().includes('report')) generatedTags.push('報告');
+                if (fileName.toLowerCase().includes('plan')) generatedTags.push('規劃');
+                if (fileName.toLowerCase().includes('design')) generatedTags.push('設計');
+                if (fileName.toLowerCase().includes('overview') || fileName.toLowerCase().includes('summary')) generatedTags.push('概述');
+                if (fileName.toLowerCase().includes('image') || type === 'image') generatedTags.push('圖片');
+                if (fileName.toLowerCase().includes('document') || type === 'document') generatedTags.push('文件');
+                if (fileName.toLowerCase().endsWith('.docx')) generatedTags.push('Word');
 
-                tags = [...new Set(tags)];
+                // 去重
+                generatedTags = [...new Set(generatedTags)];
+                // --- End: 自動生成標籤邏輯 ---
 
-                // 檢查是否已存在於現有 metadata 中，並保留描述
+
+                // 檢查是否已存在於現有 metadata 中，並保留描述和標籤
                 let description = `關於 ${fileName} 的簡要說明。`; // 預設描述
-                if (existingMetadata[relativePath] && existingMetadata[relativePath].description && 
-                    existingMetadata[relativePath].description !== `關於 ${fileName} 的簡要說明。`) {
-                    // 如果存在，且描述不為空，且不是預設的簡要說明，則保留
-                    description = existingMetadata[relativePath].description;
+                let finalTags = generatedTags; // 預設使用自動生成的標籤
+
+                if (existingMetadata[relativePath]) {
+                    // 如果存在，且描述不為空，且不是預設的簡要說明，則保留現有描述
+                    if (existingMetadata[relativePath].description &&
+                        existingMetadata[relativePath].description !== `關於 ${fileName} 的簡要說明。`) {
+                        description = existingMetadata[relativePath].description;
+                    }
+
+                    // 如果現有 metadata 有 tags 且不為空，則保留現有的 tags
+                    // 這就是新增的邏輯，用於防止覆寫
+                    if (existingMetadata[relativePath].tags && existingMetadata[relativePath].tags.length > 0) {
+                        finalTags = existingMetadata[relativePath].tags;
+                    }
                 }
 
                 metadata.push({
                     path: relativePath,
                     type: type,
-                    tags: tags,
+                    tags: finalTags, // 使用最終決定的標籤 (可能是現有的，也可能是自動生成的)
                     description: description
                 });
             }
