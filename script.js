@@ -466,6 +466,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     descriptionElement.className = 'image-description'; // 添加一個 class 以便樣式化
                     viewerContent.appendChild(contentElement); // 先添加圖片
                     viewerContent.appendChild(descriptionElement); // 再添加描述
+                    descriptionElement.textContent = item.description;
                     cacheManager.set(item.path, viewerContent.innerHTML); // 緩存整個內容
                     updatePinButtonState();
                     viewerNewTabButton.href = item.download_url;
