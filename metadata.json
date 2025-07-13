@@ -3,19 +3,9 @@
         "path": "utils/cacheManager.js",
         "type": "document",
         "tags": [
-            "utils",
-            "文件"
+            "utils"
         ],
         "description": "關於 cacheManager.js 的簡要說明。"
-    },
-    {
-        "path": "原創角色/楊廣/他本人.jpg",
-        "type": "image",
-        "tags": [
-            "楊廣",
-            "圖片"
-        ],
-        "description": "作者：閻立本"
     },
     {
         "path": "原創角色/楊廣/古代設立繪.png",
@@ -30,8 +20,10 @@
         "path": "原創角色/楊廣/圖/乾卦.gif",
         "type": "image",
         "tags": [
-            "圖",
-            "圖片"
+            "圖片",
+            "楊廣",
+            "卦象",
+            "像素"
         ],
         "description": "作者：阿恆\n漁歌子\n九五，飛龍在天。\n遊邁雲來體自然，須搖高蹈大羅天。\n龍氣起，會明還，陽光愷悌照群巒。"
     },
@@ -39,8 +31,9 @@
         "path": "原創角色/楊廣/圖/同生共死.png",
         "type": "image",
         "tags": [
-            "圖",
-            "圖片"
+            "圖片",
+            "楊廣",
+            "插圖"
         ],
         "description": "作者：阿夕"
     },
@@ -48,8 +41,10 @@
         "path": "原創角色/楊廣/圖/大畜卦(山天大畜).gif",
         "type": "image",
         "tags": [
-            "圖",
-            "圖片"
+            "圖片",
+            "楊廣",
+            "卦象",
+            "像素"
         ],
         "description": "作者：阿恆"
     },
@@ -57,8 +52,9 @@
         "path": "原創角色/楊廣/圖/舉高高.gif",
         "type": "image",
         "tags": [
-            "圖",
-            "圖片"
+            "圖片",
+            "楊廣",
+            "像素"
         ],
         "description": "作者：阿恆"
     },
@@ -66,25 +62,19 @@
         "path": "原創角色/楊廣/圖/謙卦(地山謙).gif",
         "type": "image",
         "tags": [
-            "圖",
-            "圖片"
+            "圖片",
+            "楊廣",
+            "卦象",
+            "像素"
         ],
         "description": "作者：阿恆"
-    },
-    {
-        "path": "原創角色/楊廣/地獄趴設定.md",
-        "type": "document",
-        "tags": [
-            "楊廣",
-            "文件"
-        ],
-        "description": "關於 地獄趴設定.md 的簡要說明。"
     },
     {
         "path": "原創角色/楊廣/現代設常服.png",
         "type": "image",
         "tags": [
             "楊廣",
+            "現代",
             "圖片"
         ],
         "description": "作者：小林"
@@ -93,18 +83,30 @@
         "path": "原創角色/楊廣/衣櫃/現代春裝.png",
         "type": "image",
         "tags": [
+            "楊廣",
+            "現代",
             "衣櫃",
             "圖片"
         ],
         "description": "作者：阿恆"
     },
     {
-        "path": "原創角色/楊廣/隋苑飛螢.png",
+        "path": "原創角色/楊廣/圖/隋苑飛螢.png",
         "type": "image",
         "tags": [
             "楊廣",
-            "圖片"
+            "圖片",
+            "插圖"
         ],
         "description": "作者：阿夕"
+    },
+        {
+        "path": "原創角色/楊廣/楊廣設定.md",
+        "type": "document",
+        "tags": [
+            "楊廣",
+            "設定"
+        ],
+        "description": "希望英仔不要讓我遭天譴"
     }
 ]
