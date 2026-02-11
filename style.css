@@ -416,7 +416,7 @@ body.viewer-active .content-display-area {
     border: none;
 }
 
-.viewer-content .image-description {
+.viewer-content {
     text-align: center;
     margin-top: 15px;
     font-size: 0.95em;
@@ -426,6 +426,18 @@ body.viewer-active .content-display-area {
     border-radius: 8px;
     line-height: 1.4;
     white-space: pre-wrap; /* 新增這行 */
+}
+
+/* style.css 建議 */
+.image-description {
+    background: rgba(255, 255, 255, 0.8);
+    border-left: 4px solid #8e44ad; /* 紫色代表英仔的貴氣 */
+    padding: 10px 15px;
+    margin-top: 10px;
+    white-space: pre-wrap; /* 這樣你的 \n 換行才會生效 */
+    font-family: "Noto Serif TC", serif;
+    color: #333;
+    line-height: 1.6;
 }
 
 
